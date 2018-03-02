@@ -1,9 +1,9 @@
 package com.ji.bakingapp;
 
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -56,6 +56,7 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
     private SimpleExoPlayerView mPlayerView;
     private static MediaSessionCompat mMediaSession;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,7 +67,18 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
 
         CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
         collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.transparent));
-
+        AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
+        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                if (verticalOffset == 0) {
+                    mPlayerView.setVisibility(View.VISIBLE);
+                } else {
+                    mPlayerView.setVisibility(View.INVISIBLE);
+                    mExoPlayer.setPlayWhenReady(false);
+                }
+            }
+        });
         ArrayList<Ingredient> food_ingredients = getIntent().getParcelableArrayListExtra("food_ingredients");
         Step step = getIntent().getParcelableExtra("step");
 
@@ -148,7 +160,7 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
             MediaSource mediaSource = new ExtractorMediaSource(mediaUri, new DefaultDataSourceFactory(
                     this, userAgent), new DefaultExtractorsFactory(), null, null);
             mExoPlayer.prepare(mediaSource);
-            mExoPlayer.setPlayWhenReady(true);
+            mExoPlayer.setPlayWhenReady(false); //default it does not start automatically
         }
     }
 
