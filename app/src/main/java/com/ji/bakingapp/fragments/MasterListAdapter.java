@@ -81,6 +81,7 @@ public class MasterListAdapter extends RecyclerView.Adapter<MasterListAdapter.Ma
 
         public MasterListAdapterViewHolder(View itemView) {
             super(itemView);
+            int position = getAdapterPosition(); //TODO: FIX RETURNING ALWAYS -1
             title = itemView.findViewById(R.id.title);
             stepNumber = itemView.findViewById(R.id.stepNumber);
             view = itemView;
