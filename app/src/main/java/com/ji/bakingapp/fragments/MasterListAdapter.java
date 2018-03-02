@@ -58,14 +58,10 @@ public class MasterListAdapter extends RecyclerView.Adapter<MasterListAdapter.Ma
     @Override
     public void onBindViewHolder(MasterListAdapterViewHolder holder, final int position) {
         String title = mStepsList.get(position).getShortDescription();
-        holder.title.setText(title);
+        String capTitle = title.substring(0, 1).toUpperCase() + title.substring(1);//title with first letter capitalized
+        holder.title.setText(capTitle);
         holder.stepNumber.setText(String.valueOf(position + 1));
-        holder.view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mCallback.onItemClickListener(position);
-            }
-        });
+
     }
 
     @Override
@@ -78,13 +74,17 @@ public class MasterListAdapter extends RecyclerView.Adapter<MasterListAdapter.Ma
         TextView title, stepNumber;
         View view;
 
-
         public MasterListAdapterViewHolder(View itemView) {
             super(itemView);
-            int position = getAdapterPosition(); //TODO: FIX RETURNING ALWAYS -1
             title = itemView.findViewById(R.id.title);
             stepNumber = itemView.findViewById(R.id.stepNumber);
             view = itemView;
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mCallback.onItemClickListener(getAdapterPosition());
+                }
+            });
         }
 
     }

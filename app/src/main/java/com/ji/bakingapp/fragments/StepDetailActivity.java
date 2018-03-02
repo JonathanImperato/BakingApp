@@ -18,7 +18,7 @@ public class StepDetailActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             StepsFragment stepFragment = new StepsFragment();
             Bundle bundle = getIntent().getExtras();
-            ArrayList<Step> food = bundle.getParcelableArrayList("food");
+            ArrayList<Step> food = bundle.getParcelableArrayList("food_step");
             int index = bundle.getInt("stepIndex",0);
 
             stepFragment.setStepsList(food);

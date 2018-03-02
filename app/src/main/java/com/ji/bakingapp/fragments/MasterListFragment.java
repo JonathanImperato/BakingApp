@@ -56,8 +56,8 @@ public class MasterListFragment extends Fragment {
         RecyclerView stepsRecyclerView = (RecyclerView) rootView.findViewById(R.id.steps_recyclerview);
         stepsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         MasterListAdapter mAdapter = null;
-        if (SummaryActivity.food != null)
-            mAdapter = new MasterListAdapter(getContext(), SummaryActivity.food, new MasterListAdapter.OnItemClickListener() {
+        if (SummaryActivity.food_step != null)
+            mAdapter = new MasterListAdapter(getContext(), SummaryActivity.food_step, new MasterListAdapter.OnItemClickListener() {
                 @Override
                 public void onItemClickListener(int position) {
                     mCallback.onStepSelected(position);

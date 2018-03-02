@@ -21,7 +21,7 @@
         <activity android:name=".fragments.SummaryActivity" />
         <activity android:name=".fragments.StepDetailActivity" />
         <activity
-            android:name=".IngredientsActivity"
+            android:name=".IntroductionActivity"
             android:label="@string/title_activity_ingredients"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>

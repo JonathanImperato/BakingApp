@@ -59,7 +59,7 @@ public class FoodAdapter extends RecyclerView.Adapter {
         public void onClick(View view) {
             int adapterPosition = getAdapterPosition();
             Food food = mFoodList[adapterPosition];
-            mContext.startActivity(new Intent(mContext, SummaryActivity.class).putExtra("food", food.getSteps()));
+            mContext.startActivity(new Intent(mContext, SummaryActivity.class).putExtra("food_ingredients", food.getIngredients()).putExtra("food_steps", food.getSteps()));
         }
     }
 }
