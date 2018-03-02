@@ -68,7 +68,17 @@ public class SummaryActivity extends AppCompatActivity implements MasterListFrag
     @Override
     public void onStepSelected(int position) {
         if (position == 0) {
-            startActivity(new Intent(SummaryActivity.this, IntroductionActivity.class).putExtra("step", food_step.get(0)).putExtra("food_ingredients", ingredients));
+            if (mTwoPane) {
+                IntroFragment newFragment = new IntroFragment();
+                newFragment.setIngredientArrayList(ingredients);
+                newFragment.setStep(food_step.get(0));
+                // Replace the old head fragment with a new one
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.steps_container, newFragment)
+                        .commit();
+
+            } else
+                startActivity(new Intent(SummaryActivity.this, IntroductionActivity.class).putExtra("step", food_step.get(0)).putExtra("food_ingredients", ingredients));
         } else {
             if (mTwoPane) { //it means it is a tablet
 
