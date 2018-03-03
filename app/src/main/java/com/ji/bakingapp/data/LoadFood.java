@@ -101,7 +101,7 @@ public class LoadFood extends android.support.v4.content.AsyncTaskLoader<Food[]>
                     ArrayList<Ingredient> ingredientList = new ArrayList<>();
                     for (int j = 0; j < ingredientsArray.length(); j++) {
                         Ingredient ingredient = new Ingredient(
-                                ingredientsArray.getJSONObject(j).getInt("quantity"),
+                                ingredientsArray.getJSONObject(j).getDouble("quantity"),
                                 ingredientsArray.getJSONObject(j).getString("measure"),
                                 ingredientsArray.getJSONObject(j).getString("ingredient")
                         );

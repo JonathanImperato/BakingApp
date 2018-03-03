@@ -8,21 +8,43 @@ import android.os.Parcelable;
  */
 
 public class Ingredient implements Parcelable{
-    int quantity;
+    Double quantity;
     String measure;
     String ingredient;
 
-    public Ingredient(int quantity, String measure, String ingredient) {
+    public Ingredient(Double quantity, String measure, String ingredient) {
 
         this.quantity = quantity;
         this.measure = measure;
         this.ingredient = ingredient;
     }
 
+
     protected Ingredient(Parcel in) {
-        quantity = in.readInt();
+        if (in.readByte() == 0) {
+            quantity = null;
+        } else {
+            quantity = in.readDouble();
+        }
         measure = in.readString();
         ingredient = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        if (quantity == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeDouble(quantity);
+        }
+        dest.writeString(measure);
+        dest.writeString(ingredient);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public static final Creator<Ingredient> CREATOR = new Creator<Ingredient>() {
@@ -37,11 +59,11 @@ public class Ingredient implements Parcelable{
         }
     };
 
-    public int getQuantity() {
+    public Double getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(int quantity) {
+    public void setQuantity(Double quantity) {
         this.quantity = quantity;
     }
 
@@ -61,15 +83,4 @@ public class Ingredient implements Parcelable{
         this.ingredient = ingredient;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeInt(quantity);
-        parcel.writeString(measure);
-        parcel.writeString(ingredient);
-    }
 }

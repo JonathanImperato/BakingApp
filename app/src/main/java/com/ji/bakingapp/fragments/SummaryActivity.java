@@ -35,7 +35,7 @@ public class SummaryActivity extends AppCompatActivity implements MasterListFrag
 
 
         mTwoPane = false;
-        if (findViewById(R.id.android_me_linear_layout) != null) {
+        if (findViewById(R.id.fragmentStep) != null) {
             if (savedInstanceState == null) {
 
                 mTwoPane = true;
@@ -67,18 +67,18 @@ public class SummaryActivity extends AppCompatActivity implements MasterListFrag
 
     @Override
     public void onStepSelected(int position) {
-        if (position == 0) {
-            if (mTwoPane) {
+        if (position == 0) { //it the recipe introductions, where we are going to show ingredients
+            if (mTwoPane) { //if it is a tablet than fragment
                 IntroFragment newFragment = new IntroFragment();
                 newFragment.setIngredientArrayList(ingredients);
-                newFragment.setStep(food_step.get(0));
+                newFragment.setStep(food_step.get(position));
                 // Replace the old head fragment with a new one
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.steps_container, newFragment)
                         .commit();
 
-            } else
-                startActivity(new Intent(SummaryActivity.this, IntroductionActivity.class).putExtra("step", food_step.get(0)).putExtra("food_ingredients", ingredients));
+            } else //smartphone, so activity
+                startActivity(new Intent(SummaryActivity.this, IntroductionActivity.class).putExtra("step", food_step.get(position)).putExtra("food_ingredients", ingredients));
         } else {
             if (mTwoPane) { //it means it is a tablet
 

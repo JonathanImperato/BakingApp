@@ -1,5 +1,6 @@
 package com.ji.bakingapp;
 
+import android.app.Dialog;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
@@ -7,6 +8,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +17,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -55,6 +60,10 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
     private PlaybackStateCompat.Builder mStateBuilder;
     private SimpleExoPlayerView mPlayerView;
     private static MediaSessionCompat mMediaSession;
+    Dialog mFullScreenDialog;
+    boolean mExoPlayerFullscreen;
+    private ImageView mFullScreenIcon;
+    private FrameLayout mFullScreenButton;
 
 
     @Override
@@ -64,32 +73,17 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
         ButterKnife.bind(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
-        collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.transparent));
-        AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
-        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-            @Override
-            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                if (verticalOffset == 0) {
-                    mPlayerView.setVisibility(View.VISIBLE);
-                } else {
-                    mPlayerView.setVisibility(View.INVISIBLE);
-                    mExoPlayer.setPlayWhenReady(false);
-                }
-            }
-        });
-        ArrayList<Ingredient> food_ingredients = getIntent().getParcelableArrayListExtra("food_ingredients");
-        Step step = getIntent().getParcelableExtra("step");
-
+        FloatingActionButton fab = findViewById(R.id.fab);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         ingredientsRecyclerview.setNestedScrollingEnabled(false);
         ingredientsRecyclerview.setLayoutManager(linearLayoutManager);
 
+        ArrayList<Ingredient> food_ingredients = getIntent().getParcelableArrayListExtra("food_ingredients");
+        Step step = getIntent().getParcelableExtra("step");
+
         IngredientsAdapter adapter = new IngredientsAdapter(this, food_ingredients);
         ingredientsRecyclerview.setAdapter(adapter);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -109,9 +103,58 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
     }
 
     /**
-     * Initializes the Media Session to be enabled with media buttons, transport controls, callbacks
-     * and media controller.
+     * FOLLOWED TUTORIAL BY Geoff Ledak
+     * URL: https://geoffledak.com/blog/2017/09/11/how-to-add-a-fullscreen-toggle-button-to-exoplayer-in-android/
      */
+    private void initFullscreenDialog() {
+
+        mFullScreenDialog = new Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen) {
+            public void onBackPressed() {
+                if (mExoPlayerFullscreen)
+                    closeFullscreenDialog();
+                super.onBackPressed();
+            }
+        };
+    }
+
+    private void openFullscreenDialog() {
+
+        ((ViewGroup) mPlayerView.getParent()).removeView(mPlayerView);
+        mFullScreenDialog.addContentView(mPlayerView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        mFullScreenIcon.setImageDrawable(ContextCompat.getDrawable(IntroductionActivity.this, R.drawable.ic_fullscreen_skrink));
+        mExoPlayerFullscreen = true;
+        mFullScreenDialog.show();
+    }
+
+    private void closeFullscreenDialog() {
+
+        ((ViewGroup) mPlayerView.getParent()).removeView(mPlayerView);
+        ((CollapsingToolbarLayout) findViewById(R.id.toolbar_layout)).addView(mPlayerView);
+        mExoPlayerFullscreen = false;
+        mFullScreenDialog.dismiss();
+        mFullScreenIcon.setImageDrawable(ContextCompat.getDrawable(IntroductionActivity.this, R.drawable.ic_fullscreen_expand));
+    }
+
+    private void initFullscreenButton() {
+
+        SimpleExoPlayerView controlView = mPlayerView.findViewById(R.id.playerView);
+        mFullScreenIcon = controlView.findViewById(R.id.exo_fullscreen_icon);
+        mFullScreenButton = controlView.findViewById(R.id.exo_fullscreen_button);
+        mFullScreenButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!mExoPlayerFullscreen)
+                    openFullscreenDialog();
+                else
+                    closeFullscreenDialog();
+            }
+        });
+    }
+
+    /**
+     * FINISHES HERE
+     */
+
     private void initializeMediaSession() {
 
         // Create a MediaSessionCompat.
@@ -230,5 +273,12 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
     protected void onDestroy() {
         super.onDestroy();
         releasePlayer();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initFullscreenDialog();
+        initFullscreenButton();
     }
 }

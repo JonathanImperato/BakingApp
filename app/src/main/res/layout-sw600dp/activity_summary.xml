@@ -18,11 +18,10 @@
         android:background="@android:color/darker_gray" />
 
     <LinearLayout
-        android:id="@+id/android_me_linear_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/fragmentStep"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_gravity="center_vertical"
-        android:background="@android:color/white"
         android:orientation="vertical"
         android:padding="25dp">
 
@@ -31,7 +30,7 @@
         <FrameLayout
             android:id="@+id/steps_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:scaleType="centerInside"/>
 
 

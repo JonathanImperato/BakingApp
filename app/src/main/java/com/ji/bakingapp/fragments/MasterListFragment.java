@@ -61,7 +61,7 @@ public class MasterListFragment extends Fragment {
                 @Override
                 public void onItemClickListener(int position) {
                     mCallback.onStepSelected(position);
-                }
+                    }
             });
 
         stepsRecyclerView.setAdapter(mAdapter);
