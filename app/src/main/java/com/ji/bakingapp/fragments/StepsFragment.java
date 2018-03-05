@@ -22,6 +22,7 @@ public class StepsFragment extends Fragment {
     private ArrayList<Step> stepsList;
     private int stepIndex;
     TextView stepNameTextView;
+    String stepName;
 
     public StepsFragment() {
         // Required empty public constructor
@@ -40,8 +41,8 @@ public class StepsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_steps, container, false);
         stepNameTextView = view.findViewById(R.id.step_name);
 
-        if (stepIndex == -1) stepIndex = 0;
-        String stepName = stepsList.get(stepIndex).getDescription();
+        if (stepIndex == -1 || stepIndex == 0) stepName = getString(R.string.select_a_step);
+        else stepName = stepsList.get(stepIndex).getDescription();
 
         if (stepName != null && !stepName.isEmpty())
             stepNameTextView.setText(stepName);

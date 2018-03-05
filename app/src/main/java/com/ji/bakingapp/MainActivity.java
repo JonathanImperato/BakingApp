@@ -14,7 +14,7 @@ import com.ji.bakingapp.widget.FoodAdapter;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class RecipesActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity {
 
     @BindView(R.id.main_recycler)
     RecyclerView mRecyclerView;
@@ -27,8 +27,7 @@ public class RecipesActivity extends AppCompatActivity {
         //TODO USE SCHEMATIC AND BUTTERKNIFE
         ButterKnife.bind(this);
 
-
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         mRecyclerView.setLayoutManager(linearLayoutManager);
         mRecyclerView.setHasFixedSize(true);
         getSupportLoaderManager().initLoader(1, null, new LoaderManager.LoaderCallbacks<Food[]>() {
@@ -41,7 +40,7 @@ public class RecipesActivity extends AppCompatActivity {
 
             @Override
             public void onLoadFinished(Loader<Food[]> loader, Food[] data) {
-                mAdapter = new FoodAdapter(RecipesActivity.this, data);
+                mAdapter = new FoodAdapter(MainActivity.this, data);
                 mRecyclerView.setAdapter(mAdapter);
             }
 

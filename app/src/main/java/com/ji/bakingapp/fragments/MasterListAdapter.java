@@ -1,6 +1,7 @@
 package com.ji.bakingapp.fragments;
 
 import android.content.Context;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -60,7 +61,7 @@ public class MasterListAdapter extends RecyclerView.Adapter<MasterListAdapter.Ma
         String title = mStepsList.get(position).getShortDescription();
         String capTitle = title.substring(0, 1).toUpperCase() + title.substring(1);//title with first letter capitalized
         holder.title.setText(capTitle);
-        holder.stepNumber.setText(String.valueOf(position + 1));
+        holder.stepNumber.setText(String.valueOf(position));
 
     }
 
@@ -73,6 +74,7 @@ public class MasterListAdapter extends RecyclerView.Adapter<MasterListAdapter.Ma
     public class MasterListAdapterViewHolder extends RecyclerView.ViewHolder {
         TextView title, stepNumber;
         View view;
+        int position;
 
         public MasterListAdapterViewHolder(View itemView) {
             super(itemView);
@@ -82,10 +84,13 @@ public class MasterListAdapter extends RecyclerView.Adapter<MasterListAdapter.Ma
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    mCallback.onItemClickListener(getAdapterPosition());
+                    position = getAdapterPosition();
+                    mCallback.onItemClickListener(position);
                 }
             });
+
+            }
         }
 
-    }
+
 }

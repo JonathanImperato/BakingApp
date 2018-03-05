@@ -2,6 +2,7 @@ package com.ji.bakingapp.widget;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,7 +54,9 @@ public class FoodAdapter extends RecyclerView.Adapter {
             super(view);
             thumbnail = view.findViewById(R.id.img);
             view.setOnClickListener(this);
+
         }
+
 
         @Override
         public void onClick(View view) {
@@ -61,5 +64,6 @@ public class FoodAdapter extends RecyclerView.Adapter {
             Food food = mFoodList[adapterPosition];
             mContext.startActivity(new Intent(mContext, SummaryActivity.class).putExtra("food_ingredients", food.getIngredients()).putExtra("food_steps", food.getSteps()));
         }
+
     }
 }
