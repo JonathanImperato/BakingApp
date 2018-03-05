@@ -4,8 +4,10 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.DisplayMetrics;
 
 import com.ji.bakingapp.data.LoadFood;
 import com.ji.bakingapp.utils.Food;
@@ -26,10 +28,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         //TODO USE SCHEMATIC AND BUTTERKNIFE
         ButterKnife.bind(this);
-
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        mRecyclerView.setLayoutManager(linearLayoutManager);
+        int numberOfColumns = getNumberOfColumns();
         mRecyclerView.setHasFixedSize(true);
+        StaggeredGridLayoutManager lM = new StaggeredGridLayoutManager(numberOfColumns, StaggeredGridLayoutManager.VERTICAL);
+        GridLayoutManager layoutManager = new GridLayoutManager(this, numberOfColumns);
+        mRecyclerView.setLayoutManager(lM);
         getSupportLoaderManager().initLoader(1, null, new LoaderManager.LoaderCallbacks<Food[]>() {
             @Override
             public Loader<Food[]> onCreateLoader(int id, Bundle args) {
@@ -51,4 +54,12 @@ public class MainActivity extends AppCompatActivity {
 
         });
     }
+
+    public int getNumberOfColumns() {
+        DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
+        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+        int numberOfCs = (int) (dpWidth / 180);
+        return numberOfCs;
+    }
+
 }

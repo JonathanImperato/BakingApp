@@ -23,12 +23,16 @@
         <TextView
             android:id="@+id/ingredients_title"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="16dp"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/ic_restaurant_menu_24dp"
+            android:padding="8dp"
+            android:layout_marginLeft="8dp"
+            android:drawablePadding="16dp"
             android:text="@string/ingredients"
             android:textSize="30sp" />
 
         <android.support.v7.widget.RecyclerView
+            tools:listitem="@layout/ingredient_item"
             android:id="@+id/ingredientsRecyclerview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

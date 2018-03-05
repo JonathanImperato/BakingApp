@@ -1,10 +1,10 @@
 package com.ji.bakingapp;
 
 import android.app.Dialog;
+import android.content.res.Configuration;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -100,6 +100,18 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
         // Initialize the Media Session.
         initializeMediaSession();
         initializePlayer(Uri.parse(step.getVideoURL()));
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            if (!mExoPlayerFullscreen)
+                openFullscreenDialog(); //enter full screen if changes orientation to landscape
+        } else {
+            if (mExoPlayerFullscreen) //on rotation change, if after rotated it is vertical
+                closeFullscreenDialog(); //leave the full screen
+        }
     }
 
     /**

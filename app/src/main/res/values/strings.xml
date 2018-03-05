@@ -6,7 +6,8 @@
 
 
     <string name="hello_blank_fragment">SELECT A STEP TO START</string>
-    <string name="title_activity_ingredients">Recipe Introduction</string>
+    <string name="title_activity_ingredients"> </string>
+    <string name="title_activity_ingredients_2">Recipe Introduction</string>
 
     <string name="action_settings">Settings</string>
     <string name="ingredients">Ingredients</string>

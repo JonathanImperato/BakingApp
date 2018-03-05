@@ -12,7 +12,6 @@
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_marginLeft="16dp"
-        android:layout_marginTop="32dp"
         android:background="@drawable/rtextview"
         android:foregroundGravity="center"
         android:gravity="center"
