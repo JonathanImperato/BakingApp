@@ -10,6 +10,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -102,6 +103,7 @@ public class IntroFragment extends Fragment implements ExoPlayer.EventListener {
         ingredientsRecyclerview.setLayoutManager(linearLayoutManager);
         IngredientsAdapter adapter = new IngredientsAdapter(getContext(), ingredientArrayList);
         ingredientsRecyclerview.setAdapter(adapter);
+        Log.d(TAG, "Created");
         return view;
     }
 

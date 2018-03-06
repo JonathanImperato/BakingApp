@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.ji.bakingapp.R;
-import com.ji.bakingapp.fragments.SummaryActivity;
+import com.ji.bakingapp.SummaryActivity;
 import com.ji.bakingapp.utils.Food;
 import com.makeramen.roundedimageview.RoundedImageView;
 

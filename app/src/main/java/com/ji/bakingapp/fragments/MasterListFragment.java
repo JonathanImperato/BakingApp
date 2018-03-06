@@ -5,11 +5,13 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.ji.bakingapp.R;
+import com.ji.bakingapp.SummaryActivity;
 
 /**
  * Created by jonathanimperato on 01/03/18.
@@ -19,6 +21,7 @@ public class MasterListFragment extends Fragment {
 
     // Define a new interface OnStepSelected that triggers a callback in the host activity
     OnStepSelected mCallback;
+    private static final String TAG = "MasterListFragment";
 
 
 
@@ -63,6 +66,8 @@ public class MasterListFragment extends Fragment {
                     mCallback.onStepSelected(position);
                     }
             });
+
+        Log.d(TAG, "Created");
 
         stepsRecyclerView.setAdapter(mAdapter);
         return rootView;

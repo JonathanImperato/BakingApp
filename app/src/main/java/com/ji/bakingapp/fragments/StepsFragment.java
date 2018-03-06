@@ -3,6 +3,7 @@ package com.ji.bakingapp.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,8 +22,8 @@ public class StepsFragment extends Fragment {
     private static final String TAG = "StepsFragment";
     private ArrayList<Step> stepsList;
     private int stepIndex;
-    TextView stepNameTextView;
-    String stepName;
+    String stepDescription, stepShortDescription;
+    TextView stepDescTextView, stepShortTextView;
 
     public StepsFragment() {
         // Required empty public constructor
@@ -37,15 +38,28 @@ public class StepsFragment extends Fragment {
             stepsList = savedInstanceState.getParcelableArrayList("list");
             stepIndex = savedInstanceState.getInt("index");
         }
-
         View view = inflater.inflate(R.layout.fragment_steps, container, false);
-        stepNameTextView = view.findViewById(R.id.step_name);
+        stepDescTextView = view.findViewById(R.id.step_desc);
+        stepShortTextView = view.findViewById(R.id.step_short_desc);
 
-        if (stepIndex == -1 || stepIndex == 0) stepName = getString(R.string.select_a_step);
-        else stepName = stepsList.get(stepIndex).getDescription();
+        if (stepsList == null) {
+            stepShortTextView.setText(R.string.select_a_step);
+            stepDescTextView.setVisibility(View.GONE);
+        } else {
+            stepDescTextView.setVisibility(View.VISIBLE);
 
-        if (stepName != null && !stepName.isEmpty())
-            stepNameTextView.setText(stepName);
+            if (stepIndex == -1 || stepIndex == 0)
+                stepDescription = getString(R.string.select_a_step);
+            else stepDescription = stepsList.get(stepIndex).getDescription();
+
+            if (stepDescription != null && !stepDescription.isEmpty())
+                stepDescTextView.setText(stepDescription);
+
+            stepShortDescription = stepsList.get(stepIndex).getShortDescription();
+            stepShortTextView.setText(stepShortDescription);
+
+            Log.d(TAG, "Created");
+        }
         return view;
     }
 

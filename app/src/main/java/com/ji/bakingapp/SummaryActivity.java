@@ -1,13 +1,15 @@
-package com.ji.bakingapp.fragments;
+package com.ji.bakingapp;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
-import com.ji.bakingapp.IntroductionActivity;
-import com.ji.bakingapp.R;
+import com.ji.bakingapp.fragments.IntroFragment;
+import com.ji.bakingapp.fragments.MasterListFragment;
+import com.ji.bakingapp.fragments.StepsFragment;
 import com.ji.bakingapp.utils.Ingredient;
 import com.ji.bakingapp.utils.Step;
 
@@ -34,6 +36,7 @@ public class SummaryActivity extends AppCompatActivity implements MasterListFrag
         ButterKnife.bind(this);
 
 
+        Log.d(this.getClass().getSimpleName(), "Created");
         mTwoPane = false;
         if (findViewById(R.id.fragmentStep) != null) {
             if (savedInstanceState == null) {
@@ -49,7 +52,7 @@ public class SummaryActivity extends AppCompatActivity implements MasterListFrag
                     FragmentManager fragmentManager = getSupportFragmentManager();
 
                     StepsFragment stepsFragment = new StepsFragment();
-                    stepsFragment.setStepsList(food_step);
+                    stepsFragment.setStepsList(null);
 
                     // Add the fragment to its container using a transaction
                     fragmentManager.beginTransaction()

@@ -18,8 +18,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".fragments.SummaryActivity"   />
-        <activity android:name=".fragments.StepDetailActivity" />
+        <activity android:name=".SummaryActivity"   />
+        <activity android:name=".StepDetailActivity" />
         <activity
             android:name=".IntroductionActivity"
             android:configChanges="orientation"

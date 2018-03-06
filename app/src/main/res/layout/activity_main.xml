@@ -9,6 +9,7 @@
         android:id="@+id/main_recycler"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="4dp"
         tools:listitem="@layout/food_item" />
 
 </android.support.constraint.ConstraintLayout>
