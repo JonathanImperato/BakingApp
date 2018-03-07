@@ -103,6 +103,7 @@ public class SummaryActivity extends AppCompatActivity implements MasterListFrag
                 Bundle b = new Bundle();
                 b.putInt("stepIndex", position);
                 b.putParcelableArrayList("food_step", food_step);
+                b.putParcelableArrayList("food_ingredients", ingredients);
 
                 final Intent intent = new Intent(this, StepDetailActivity.class);
                 intent.putExtras(b);

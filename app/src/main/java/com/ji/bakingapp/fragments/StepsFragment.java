@@ -133,7 +133,6 @@ public class StepsFragment extends Fragment implements ExoPlayer.EventListener {
     }
 
     private void openFullscreenMode() {
-
         ((ViewGroup) mPlayerView.getParent()).removeView(mPlayerView);
         mFullScreenDialog.addContentView(mPlayerView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         mFullScreenIcon.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_fullscreen_skrink));
@@ -151,6 +150,7 @@ public class StepsFragment extends Fragment implements ExoPlayer.EventListener {
 
     private void initFullscreenButton() {
 
+
         SimpleExoPlayerView controlView = mPlayerView.findViewById(R.id.playerView);
         mFullScreenIcon = controlView.findViewById(R.id.exo_fullscreen_icon);
         mFullScreenButton = controlView.findViewById(R.id.exo_fullscreen_button);
@@ -163,6 +163,15 @@ public class StepsFragment extends Fragment implements ExoPlayer.EventListener {
                     closeFullscreenMode();
             }
         });
+        if (isATablet()) {
+            mFullScreenIcon.setVisibility(View.GONE);
+            mFullScreenButton.setVisibility(View.GONE);
+        }
+    }
+
+    boolean isATablet() {
+        boolean tabletSize = getResources().getBoolean(R.bool.isTablet);
+        return tabletSize;
     }
 
     /**

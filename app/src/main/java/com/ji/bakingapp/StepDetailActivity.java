@@ -3,35 +3,49 @@ package com.ji.bakingapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.Toast;
+import android.view.View;
+import android.widget.Button;
 
 import com.ji.bakingapp.fragments.StepsFragment;
+import com.ji.bakingapp.utils.Ingredient;
 import com.ji.bakingapp.utils.Step;
 
 import java.util.ArrayList;
 
-public class StepDetailActivity extends AppCompatActivity {
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+public class StepDetailActivity extends AppCompatActivity implements View.OnClickListener {
 
     private String TAG = this.getClass().getSimpleName();
+    int index;
+    ArrayList<Ingredient> ingredients;
+    ArrayList<Step> food;
+    @BindView(R.id.prev)
+    Button previousButton;
+    @BindView(R.id.next)
+    Button nextButton;
+    FragmentManager fragmentManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_step_detail);
+        ButterKnife.bind(this);
+        fragmentManager = getSupportFragmentManager();
         if (savedInstanceState == null) {
             StepsFragment stepFragment = new StepsFragment();
             Bundle bundle = getIntent().getExtras();
-            ArrayList<Step> food = bundle.getParcelableArrayList("food_step");
-            int index = bundle.getInt("stepIndex", 0);
+            food = bundle.getParcelableArrayList("food_step");
+            index = bundle.getInt("stepIndex", 0);
+            ingredients = bundle.getParcelableArrayList("food_ingredients");
             Log.d(TAG, "Created");
             stepFragment.setStepsList(food);
             stepFragment.setStepIndex(index);
 
-            FragmentManager fragmentManager = getSupportFragmentManager();
 
             fragmentManager.beginTransaction()
                     .add(R.id.steps_container, stepFragment)
@@ -39,6 +53,16 @@ public class StepDetailActivity extends AppCompatActivity {
                     .commit();
         }
 
+        checkForButtonVisibility();
+        previousButton.setOnClickListener(this);
+        nextButton.setOnClickListener(this);
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+        //super.onBackPressed();
     }
 
     @Override
@@ -49,5 +73,57 @@ public class StepDetailActivity extends AppCompatActivity {
                 return true;
         }
         return false;
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.prev:
+                if (index > 0) {
+                    index--;
+                    if (index == 0) { //if true it means that i need to go to the intro step
+                        index++; //i set the previous index so when i come back and i use the buttons again it will work fine
+                        Intent intent = new Intent(this, IntroductionActivity.class);
+                        intent.putExtra("step", food.get(0));
+                        intent.putExtra("food_ingredients", ingredients);
+                        startActivity(intent);
+                    } else {
+                        StepsFragment newStepFragment = new StepsFragment();
+                        newStepFragment.setStepsList(food);
+                        newStepFragment.setStepIndex(index);
+                        fragmentManager.beginTransaction()
+                                .replace(R.id.steps_container, newStepFragment)
+                                .addToBackStack("backStack")
+                                .commit();
+
+                        checkForButtonVisibility();
+                    }
+                }
+                break;
+            case R.id.next:
+                if (index < food.size() - 1) {
+                    index++;
+                    StepsFragment newStepFragment = new StepsFragment();
+                    newStepFragment.setStepsList(food);
+                    newStepFragment.setStepIndex(index);
+                    fragmentManager.beginTransaction()
+                            .replace(R.id.steps_container, newStepFragment)
+                            .addToBackStack("backStack")
+                            .commit();
+
+                    checkForButtonVisibility();
+                }
+
+                break;
+        }
+    }
+
+    void checkForButtonVisibility() {
+        if (index == 0) { //first item so need to hide prev button
+            previousButton.setVisibility(View.INVISIBLE);
+        } else previousButton.setVisibility(View.VISIBLE);
+        if (index == food.size() - 1) { //last item so need to hide next button
+            nextButton.setVisibility(View.INVISIBLE);
+        } else nextButton.setVisibility(View.VISIBLE);
     }
 }
