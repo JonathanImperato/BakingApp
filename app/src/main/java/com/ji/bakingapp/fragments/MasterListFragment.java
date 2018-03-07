@@ -2,6 +2,7 @@ package com.ji.bakingapp.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,6 +13,9 @@ import android.view.ViewGroup;
 
 import com.ji.bakingapp.R;
 import com.ji.bakingapp.SummaryActivity;
+import com.ji.bakingapp.utils.Step;
+
+import java.util.ArrayList;
 
 /**
  * Created by jonathanimperato on 01/03/18.
@@ -22,13 +26,12 @@ public class MasterListFragment extends Fragment {
     // Define a new interface OnStepSelected that triggers a callback in the host activity
     OnStepSelected mCallback;
     private static final String TAG = "MasterListFragment";
-
+    private ArrayList<Step> foodSteps;
 
 
     public interface OnStepSelected {
         void onStepSelected(int position);
     }
-
 
     @Override
     public void onAttach(Context context) {
@@ -48,7 +51,6 @@ public class MasterListFragment extends Fragment {
     public MasterListFragment() {
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -56,15 +58,17 @@ public class MasterListFragment extends Fragment {
         final View rootView = inflater.inflate(R.layout.fragment_master_list, container, false);
 
         // Get a reference to the GridView in the fragment_master_list xml layout file3
-        RecyclerView stepsRecyclerView = (RecyclerView) rootView.findViewById(R.id.steps_recyclerview);
+        RecyclerView stepsRecyclerView = rootView.findViewById(R.id.steps_recyclerview);
         stepsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         MasterListAdapter mAdapter = null;
-        if (SummaryActivity.food_step != null)
+        foodSteps = SummaryActivity.food_step;
+
+        if (foodSteps != null)
             mAdapter = new MasterListAdapter(getContext(), SummaryActivity.food_step, new MasterListAdapter.OnItemClickListener() {
                 @Override
                 public void onItemClickListener(int position) {
                     mCallback.onStepSelected(position);
-                    }
+                }
             });
 
         Log.d(TAG, "Created");
@@ -72,5 +76,4 @@ public class MasterListFragment extends Fragment {
         stepsRecyclerView.setAdapter(mAdapter);
         return rootView;
     }
-
 }

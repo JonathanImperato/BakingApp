@@ -72,7 +72,7 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_introduction);
         ButterKnife.bind(this);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         FloatingActionButton fab = findViewById(R.id.fab);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
@@ -93,7 +93,7 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
             }
         });
 
-        mPlayerView = (SimpleExoPlayerView) findViewById(R.id.playerView);
+        mPlayerView = findViewById(R.id.playerView);
 
         mPlayerView.setDefaultArtwork(BitmapFactory.decodeResource
                 (getResources(), R.drawable.ic_play_arrow));

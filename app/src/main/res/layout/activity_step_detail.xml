@@ -6,14 +6,13 @@
     android:layout_height="match_parent"
     >
 
-    <!-- LinearLayout for holding three Android-Me images -->
+
     <LinearLayout
         android:id="@+id/fragmentStep"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/white"
         android:orientation="vertical"
-        android:padding="25dp">
+        android:padding="8dp">
 
         <FrameLayout android:id="@+id/steps_container"
             android:layout_width="match_parent"

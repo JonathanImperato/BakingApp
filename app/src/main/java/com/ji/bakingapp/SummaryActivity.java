@@ -2,9 +2,12 @@ package com.ji.bakingapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MenuItem;
 
 import com.ji.bakingapp.fragments.IntroFragment;
 import com.ji.bakingapp.fragments.MasterListFragment;
@@ -29,37 +32,41 @@ public class SummaryActivity extends AppCompatActivity implements MasterListFrag
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        food_step = this.getIntent().getParcelableArrayListExtra("food_steps");
-        ingredients = this.getIntent().getParcelableArrayListExtra("food_ingredients");
+        if (getIntent() != null) {
+            food_step = this.getIntent().getParcelableArrayListExtra("food_steps");
+            ingredients = this.getIntent().getParcelableArrayListExtra("food_ingredients");
+            Log.d(this.getClass().getSimpleName(), "getIntent() != null");
+        }
+        if (savedInstanceState != null) {
+            food_step = savedInstanceState.getParcelableArrayList("list");
+            ingredients = savedInstanceState.getParcelableArrayList("food_ingredients");
+            Log.d(this.getClass().getSimpleName(), "savedInstanceState != null");
+        }
         setContentView(R.layout.activity_summary);
         ButterKnife.bind(this);
-
-
         Log.d(this.getClass().getSimpleName(), "Created");
+
         mTwoPane = false;
         if (findViewById(R.id.fragmentStep) != null) {
-            if (savedInstanceState == null) {
 
-                mTwoPane = true;
+            mTwoPane = true;
 
-                if (savedInstanceState == null) {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            //on created activity i just show the first step that is the introductional one
+            IntroFragment firstStep = new IntroFragment();
+            firstStep.setIngredientArrayList(ingredients);
+            firstStep.setStep(food_step.get(0));
 
-                    FragmentManager fragmentManager = getSupportFragmentManager();
-                    //on created activity i just show the first step that is the introductional one
-                    IntroFragment firstStep = new IntroFragment();
-                    firstStep.setIngredientArrayList(ingredients);
-                    firstStep.setStep(food_step.get(0));
-
-                    // Add the fragment to its container using a transaction
-                    fragmentManager.beginTransaction()
-                            .add(R.id.steps_container, firstStep)
-                            .commit();
+            // Add the fragment to its container using a transaction
+            fragmentManager.beginTransaction()
+                    .add(R.id.steps_container, firstStep)
+                    .addToBackStack("backStack")
+                    .commit();
 
 
-                }
-            }
         } else {
             mTwoPane = false;
+
         }
     }
 
@@ -74,6 +81,7 @@ public class SummaryActivity extends AppCompatActivity implements MasterListFrag
                 // Replace the old head fragment with a new one
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.steps_container, newFragment)
+                        .addToBackStack("backStack")
                         .commit();
 
             } else //smartphone, so activity
@@ -87,6 +95,7 @@ public class SummaryActivity extends AppCompatActivity implements MasterListFrag
                 // Replace the old head fragment with a new one
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.steps_container, newFragment)
+                        .addToBackStack("backStack")
                         .commit();
 
             } else {
@@ -101,5 +110,34 @@ public class SummaryActivity extends AppCompatActivity implements MasterListFrag
                 startActivity(intent);
             }
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList("list", food_step);
+        outState.putParcelableArrayList("food_ingredients", ingredients);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        food_step = savedInstanceState.getParcelableArrayList("list");
+        ingredients = savedInstanceState.getParcelableArrayList("food_ingredients");
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+        }
+        return false;
     }
 }

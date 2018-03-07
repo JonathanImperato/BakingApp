@@ -21,6 +21,8 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.main_recycler)
     RecyclerView mRecyclerView;
     FoodAdapter mAdapter;
+    Food[] foodData;
+    int TASK_ID = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,26 +35,32 @@ public class MainActivity extends AppCompatActivity {
         StaggeredGridLayoutManager lM = new StaggeredGridLayoutManager(numberOfColumns, StaggeredGridLayoutManager.VERTICAL);
         GridLayoutManager layoutManager = new GridLayoutManager(this, numberOfColumns);
         mRecyclerView.setLayoutManager(lM);
-        getSupportLoaderManager().initLoader(1, null, new LoaderManager.LoaderCallbacks<Food[]>() {
-            @Override
-            public Loader<Food[]> onCreateLoader(int id, Bundle args) {
-                LoadFood asyncTaskLoader = new LoadFood(getApplicationContext());
-                asyncTaskLoader.forceLoad();
-                return asyncTaskLoader;
-            }
+        if (savedInstanceState != null) {
+            foodData = (Food[]) savedInstanceState.getParcelableArray("list");
+            mAdapter = new FoodAdapter(MainActivity.this, foodData);
+            mRecyclerView.setAdapter(mAdapter);
+        } else
+            getSupportLoaderManager().initLoader(TASK_ID, null, new LoaderManager.LoaderCallbacks<Food[]>() {
+                @Override
+                public Loader<Food[]> onCreateLoader(int id, Bundle args) {
+                    LoadFood asyncTaskLoader = new LoadFood(getApplicationContext());
+                    asyncTaskLoader.forceLoad();
+                    return asyncTaskLoader;
+                }
 
-            @Override
-            public void onLoadFinished(Loader<Food[]> loader, Food[] data) {
-                mAdapter = new FoodAdapter(MainActivity.this, data);
-                mRecyclerView.setAdapter(mAdapter);
-            }
+                @Override
+                public void onLoadFinished(Loader<Food[]> loader, Food[] data) {
+                    foodData = data;
+                    mAdapter = new FoodAdapter(MainActivity.this, data);
+                    mRecyclerView.setAdapter(mAdapter);
+                }
 
-            @Override
-            public void onLoaderReset(Loader<Food[]> loader) {
+                @Override
+                public void onLoaderReset(Loader<Food[]> loader) {
 
-            }
+                }
 
-        });
+            });
     }
 
     public int getNumberOfColumns() {
@@ -62,4 +70,15 @@ public class MainActivity extends AppCompatActivity {
         return numberOfCs;
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArray("list", foodData);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        foodData = (Food[]) savedInstanceState.getParcelableArray("list");
+    }
 }
