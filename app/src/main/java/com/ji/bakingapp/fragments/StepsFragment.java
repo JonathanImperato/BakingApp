@@ -42,10 +42,6 @@ public class StepsFragment extends Fragment {
         stepDescTextView = view.findViewById(R.id.step_desc);
         stepShortTextView = view.findViewById(R.id.step_short_desc);
 
-        if (stepsList == null) {
-            stepShortTextView.setText(R.string.select_a_step);
-            stepDescTextView.setVisibility(View.GONE);
-        } else {
             stepDescTextView.setVisibility(View.VISIBLE);
 
             if (stepIndex == -1 || stepIndex == 0)
@@ -59,7 +55,7 @@ public class StepsFragment extends Fragment {
             stepShortTextView.setText(stepShortDescription);
 
             Log.d(TAG, "Created");
-        }
+
         return view;
     }
 

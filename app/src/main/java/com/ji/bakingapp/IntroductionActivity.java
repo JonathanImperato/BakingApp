@@ -1,11 +1,12 @@
 package com.ji.bakingapp;
 
 import android.app.Dialog;
+import android.app.FragmentBreadCrumbs;
 import android.content.res.Configuration;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
@@ -107,10 +108,10 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
         super.onConfigurationChanged(newConfig);
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             if (!mExoPlayerFullscreen)
-                openFullscreenDialog(); //enter full screen if changes orientation to landscape
+                openFullscreenMode(); //enter full screen if changes orientation to landscape
         } else {
             if (mExoPlayerFullscreen) //on rotation change, if after rotated it is vertical
-                closeFullscreenDialog(); //leave the full screen
+                closeFullscreenMode(); //leave the full screen
         }
     }
 
@@ -118,18 +119,18 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
      * FOLLOWED TUTORIAL BY Geoff Ledak
      * URL: https://geoffledak.com/blog/2017/09/11/how-to-add-a-fullscreen-toggle-button-to-exoplayer-in-android/
      */
-    private void initFullscreenDialog() {
+    private void initFullscreenMode() {
 
         mFullScreenDialog = new Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen) {
             public void onBackPressed() {
                 if (mExoPlayerFullscreen)
-                    closeFullscreenDialog();
+                    closeFullscreenMode();
                 super.onBackPressed();
             }
         };
     }
 
-    private void openFullscreenDialog() {
+    private void openFullscreenMode() {
 
         ((ViewGroup) mPlayerView.getParent()).removeView(mPlayerView);
         mFullScreenDialog.addContentView(mPlayerView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -138,10 +139,9 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
         mFullScreenDialog.show();
     }
 
-    private void closeFullscreenDialog() {
-
+    private void closeFullscreenMode() {
         ((ViewGroup) mPlayerView.getParent()).removeView(mPlayerView);
-        ((CollapsingToolbarLayout) findViewById(R.id.toolbar_layout)).addView(mPlayerView);
+        ((FrameLayout) findViewById(R.id.main_media_frame)).addView(mPlayerView);
         mExoPlayerFullscreen = false;
         mFullScreenDialog.dismiss();
         mFullScreenIcon.setImageDrawable(ContextCompat.getDrawable(IntroductionActivity.this, R.drawable.ic_fullscreen_expand));
@@ -156,9 +156,9 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
             @Override
             public void onClick(View v) {
                 if (!mExoPlayerFullscreen)
-                    openFullscreenDialog();
+                    openFullscreenMode();
                 else
-                    closeFullscreenDialog();
+                    closeFullscreenMode();
             }
         });
     }
@@ -290,7 +290,7 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
     @Override
     protected void onResume() {
         super.onResume();
-        initFullscreenDialog();
+        initFullscreenMode();
         initFullscreenButton();
     }
 }

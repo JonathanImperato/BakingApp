@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
 import com.ji.bakingapp.fragments.IntroFragment;
@@ -43,20 +42,17 @@ public class SummaryActivity extends AppCompatActivity implements MasterListFrag
 
                 mTwoPane = true;
 
-                // Change the GridView to space out the images more on tablet
-                RecyclerView gridView = (RecyclerView) findViewById(R.id.steps_recyclerview);
-
-
                 if (savedInstanceState == null) {
 
                     FragmentManager fragmentManager = getSupportFragmentManager();
-
-                    StepsFragment stepsFragment = new StepsFragment();
-                    stepsFragment.setStepsList(null);
+                    //on created activity i just show the first step that is the introductional one
+                    IntroFragment firstStep = new IntroFragment();
+                    firstStep.setIngredientArrayList(ingredients);
+                    firstStep.setStep(food_step.get(0));
 
                     // Add the fragment to its container using a transaction
                     fragmentManager.beginTransaction()
-                            .add(R.id.steps_container, stepsFragment)
+                            .add(R.id.steps_container, firstStep)
                             .commit();
 
 
