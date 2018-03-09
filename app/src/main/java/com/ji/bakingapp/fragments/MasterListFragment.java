@@ -11,11 +11,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.ji.bakingapp.R;
 import com.ji.bakingapp.SummaryActivity;
 import com.ji.bakingapp.utils.Step;
 
 import java.util.ArrayList;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * Created by jonathanimperato on 01/03/18.
@@ -28,6 +32,8 @@ public class MasterListFragment extends Fragment {
     private static final String TAG = "MasterListFragment";
     private ArrayList<Step> foodSteps;
 
+    @BindView(R.id.steps_recyclerview)
+     RecyclerView stepsRecyclerView;
 
     public interface OnStepSelected {
         void onStepSelected(int position);
@@ -57,8 +63,7 @@ public class MasterListFragment extends Fragment {
 
         final View rootView = inflater.inflate(R.layout.fragment_master_list, container, false);
 
-        // Get a reference to the GridView in the fragment_master_list xml layout file3
-        RecyclerView stepsRecyclerView = rootView.findViewById(R.id.steps_recyclerview);
+        ButterKnife.bind(this, rootView);
         stepsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         MasterListAdapter mAdapter = null;
         foodSteps = SummaryActivity.food_step;

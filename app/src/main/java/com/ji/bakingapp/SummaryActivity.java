@@ -2,21 +2,23 @@ package com.ji.bakingapp;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.LinearLayout;
 
 import com.ji.bakingapp.fragments.IntroFragment;
 import com.ji.bakingapp.fragments.MasterListFragment;
 import com.ji.bakingapp.fragments.StepsFragment;
+import com.ji.bakingapp.utils.Food;
 import com.ji.bakingapp.utils.Ingredient;
 import com.ji.bakingapp.utils.Step;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -28,13 +30,21 @@ public class SummaryActivity extends AppCompatActivity implements MasterListFrag
     private boolean mTwoPane;
     public static ArrayList<Step> food_step;
     ArrayList<Ingredient> ingredients;
+    @Nullable
+    @BindView(R.id.fragmentStep)
+    LinearLayout fragmentStepContainer;
+    String food_name;
+    Food food;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getIntent() != null) {
             food_step = this.getIntent().getParcelableArrayListExtra("food_steps");
+            food_name = this.getIntent().getStringExtra("food_name");
             ingredients = this.getIntent().getParcelableArrayListExtra("food_ingredients");
+            food = this.getIntent().getParcelableExtra("food");
             Log.d(this.getClass().getSimpleName(), "getIntent() != null");
         }
         if (savedInstanceState != null) {
@@ -45,12 +55,11 @@ public class SummaryActivity extends AppCompatActivity implements MasterListFrag
         setContentView(R.layout.activity_summary);
         ButterKnife.bind(this);
         Log.d(this.getClass().getSimpleName(), "Created");
-
+        if (food_name.length() > 0)
+            this.setTitle(food_name);
         mTwoPane = false;
-        if (findViewById(R.id.fragmentStep) != null) {
-
+        if (fragmentStepContainer != null) {
             mTwoPane = true;
-
             FragmentManager fragmentManager = getSupportFragmentManager();
             //on created activity i just show the first step that is the introductional one
             IntroFragment firstStep = new IntroFragment();
@@ -62,7 +71,6 @@ public class SummaryActivity extends AppCompatActivity implements MasterListFrag
                     .add(R.id.steps_container, firstStep)
                     .addToBackStack("backStack")
                     .commit();
-
 
         } else {
             mTwoPane = false;
@@ -85,7 +93,11 @@ public class SummaryActivity extends AppCompatActivity implements MasterListFrag
                         .commit();
 
             } else //smartphone, so activity
-                startActivity(new Intent(SummaryActivity.this, IntroductionActivity.class).putExtra("step", food_step.get(position)).putExtra("food_ingredients", ingredients));
+                startActivity(new Intent(SummaryActivity.this, IntroductionActivity.class)
+                        .putExtra("step", food_step.get(position))
+                        .putExtra("food_ingredients", ingredients)
+                        .putExtra("food_name", food_name)
+                        .putExtra("food", food));
         } else {
             if (mTwoPane) { //it means it is a tablet
 

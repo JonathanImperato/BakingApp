@@ -29,12 +29,14 @@ public class StepDetailActivity extends AppCompatActivity implements View.OnClic
     @BindView(R.id.next)
     Button nextButton;
     FragmentManager fragmentManager;
+    String food_name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_step_detail);
         ButterKnife.bind(this);
+        Log.d(TAG, "Created");
         fragmentManager = getSupportFragmentManager();
         if (savedInstanceState == null) {
             StepsFragment stepFragment = new StepsFragment();
@@ -42,7 +44,10 @@ public class StepDetailActivity extends AppCompatActivity implements View.OnClic
             food = bundle.getParcelableArrayList("food_step");
             index = bundle.getInt("stepIndex", 0);
             ingredients = bundle.getParcelableArrayList("food_ingredients");
-            Log.d(TAG, "Created");
+            food_name = this.getIntent().getStringExtra("food_name");
+
+            if (food_name.length() > 0)
+                this.setTitle(food_name);
             stepFragment.setStepsList(food);
             stepFragment.setStepIndex(index);
 
@@ -52,6 +57,7 @@ public class StepDetailActivity extends AppCompatActivity implements View.OnClic
                     .addToBackStack("backStack")
                     .commit();
         }
+
 
         checkForButtonVisibility();
         previousButton.setOnClickListener(this);

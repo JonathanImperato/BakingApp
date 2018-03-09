@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Baking App</string>
-    <string name="todo">TODO</string>
+    <string name="todo">Food Item</string>
     <string name="title_food_list">Foods</string>
     <string name="title_food_detail">Food Detail</string>
 
@@ -16,4 +16,7 @@
     <string name="step_title">Step title</string>
     <string name="previous">Previous</string>
     <string name="next">Next</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
+    <string name="recipe_added_to_widget">Recipe added as favourite for widget.</string>
 </resources>

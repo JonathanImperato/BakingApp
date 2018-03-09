@@ -1,12 +1,12 @@
 package com.ji.bakingapp;
 
 import android.app.Dialog;
-import android.app.FragmentBreadCrumbs;
+import android.content.ContentValues;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
@@ -39,9 +39,11 @@ import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
+import com.ji.bakingapp.adapters.IngredientsAdapter;
+import com.ji.bakingapp.database.ItemsContract;
+import com.ji.bakingapp.utils.Food;
 import com.ji.bakingapp.utils.Ingredient;
 import com.ji.bakingapp.utils.Step;
-import com.ji.bakingapp.widget.IngredientsAdapter;
 
 import java.util.ArrayList;
 
@@ -54,18 +56,27 @@ import butterknife.ButterKnife;
 public class IntroductionActivity extends AppCompatActivity implements ExoPlayer.EventListener {
     @BindView(R.id.card)
     CardView mCardView;
+
     @BindView(R.id.ingredientsRecyclerview)
     RecyclerView ingredientsRecyclerview;
+
+    @BindView(R.id.playerView)
+    SimpleExoPlayerView mPlayerView;
+
+    @BindView(R.id.fab)
+    FloatingActionButton fab;
+
     private String TAG = this.getClass().getSimpleName();
     private SimpleExoPlayer mExoPlayer;
     private PlaybackStateCompat.Builder mStateBuilder;
-    private SimpleExoPlayerView mPlayerView;
     private static MediaSessionCompat mMediaSession;
     Dialog mFullScreenDialog;
     boolean mExoPlayerFullscreen;
     private ImageView mFullScreenIcon;
     private FrameLayout mFullScreenButton;
-
+    ArrayList<Ingredient> food_ingredients;
+    Food food;
+    int foodID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,26 +85,29 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
         ButterKnife.bind(this);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        FloatingActionButton fab = findViewById(R.id.fab);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         ingredientsRecyclerview.setNestedScrollingEnabled(false);
         ingredientsRecyclerview.setLayoutManager(linearLayoutManager);
 
-        ArrayList<Ingredient> food_ingredients = getIntent().getParcelableArrayListExtra("food_ingredients");
+        food_ingredients = getIntent().getParcelableArrayListExtra("food_ingredients");
         Step step = getIntent().getParcelableExtra("step");
-
+        food = getIntent().getParcelableExtra("food");
+        foodID = food.getId();
         IngredientsAdapter adapter = new IngredientsAdapter(this, food_ingredients);
         ingredientsRecyclerview.setAdapter(adapter);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                //update widget
+                //UpdateWidgetService.startBakingService(IntroductionActivity.this, food_ingredients);
+                if (!isFavourite())
+                    insertData();
+                else removeData();
+                Snackbar.make(fab, R.string.recipe_added_to_widget, Snackbar.LENGTH_LONG).setAction("action", null).show();
             }
         });
 
-        mPlayerView = findViewById(R.id.playerView);
 
         mPlayerView.setDefaultArtwork(BitmapFactory.decodeResource
                 (getResources(), R.drawable.ic_play_arrow));
@@ -101,6 +115,54 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
         // Initialize the Media Session.
         initializeMediaSession();
         initializePlayer(Uri.parse(step.getVideoURL()));
+    }
+
+    /**
+     * CONTENT PROVIDER STUFF
+     */
+    public void insertData() {
+        ContentValues foodValues = new ContentValues();
+        foodValues.put(ItemsContract.FoodEntry.COLUMN_FOOD_NAME, food.getName());
+        foodValues.put(ItemsContract.FoodEntry.COLUMN_FOOD_SERVINGS, food.getServings());
+        foodValues.put(ItemsContract.FoodEntry.COLUMN_FOOD_ID, foodID);
+
+        insertDataIngredients();
+        this.getContentResolver().bulkInsert(ItemsContract.FoodEntry.CONTENT_URI_FOOD_TABLE,
+                new ContentValues[]{foodValues});
+    }
+
+    void insertDataIngredients() {
+        int foodId = foodID;
+        for (Ingredient ingredient : food_ingredients) { //TODO IMPLEMENT BULK INSERT
+            ContentValues foodValues = new ContentValues();
+            foodValues.put(ItemsContract.IngredientEntry.FOOD_ID, foodId);
+            foodValues.put(ItemsContract.IngredientEntry.COLUMN_INGREDIENT_MEASURE, ingredient.getMeasure());
+            foodValues.put(ItemsContract.IngredientEntry.COLUMN_INGREDIENT_NAME, ingredient.getIngredient());
+            foodValues.put(ItemsContract.IngredientEntry.COLUMN_INGREDIENT_QUANTITY, ingredient.getQuantity());
+
+            this.getContentResolver().bulkInsert(ItemsContract.IngredientEntry.CONTENT_URI_INGREDIENT_TABLE,
+                    new ContentValues[]{foodValues});
+        }
+    }
+
+    void removeData() {
+        removeIngredients();
+        this.getContentResolver().delete(ItemsContract.FoodEntry.CONTENT_URI_FOOD_TABLE, ItemsContract.FoodEntry.COLUMN_FOOD_ID + " = " + foodID, null);
+    }
+
+    void removeIngredients() {
+        this.getContentResolver().delete(ItemsContract.IngredientEntry.CONTENT_URI_INGREDIENT_TABLE, ItemsContract.IngredientEntry.FOOD_ID + " = " + foodID, null);
+    }
+
+    boolean isFavourite() {
+        Cursor c = this.getContentResolver().query(
+                ItemsContract.FoodEntry.CONTENT_URI_FOOD_TABLE,
+                null,
+                ItemsContract.FoodEntry.COLUMN_FOOD_ID + " = " + food.getId(),
+                null,
+                null);
+        return c.getCount() > 0;
+
     }
 
     @Override
@@ -148,7 +210,6 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
     }
 
     private void initFullscreenButton() {
-
         SimpleExoPlayerView controlView = mPlayerView.findViewById(R.id.playerView);
         mFullScreenIcon = controlView.findViewById(R.id.exo_fullscreen_icon);
         mFullScreenButton = controlView.findViewById(R.id.exo_fullscreen_button);

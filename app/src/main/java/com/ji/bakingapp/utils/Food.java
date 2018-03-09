@@ -16,9 +16,8 @@ public class Food implements Parcelable {
     int servings;
     int id;
     ArrayList<Ingredient> ingredients;
-    ArrayList<Step> steps; //TODO IMPLEMENT IN LATER USING API
+    ArrayList<Step> steps;
 
-    @SerializedName("image")
     String image;
 
     public Food() {

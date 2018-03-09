@@ -40,6 +40,9 @@ import com.ji.bakingapp.utils.Step;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -49,16 +52,22 @@ public class StepsFragment extends Fragment implements ExoPlayer.EventListener {
     private ArrayList<Step> stepsList;
     private int stepIndex;
     String stepDescription, stepShortDescription;
-    TextView stepDescTextView, stepShortTextView;
     private SimpleExoPlayer mExoPlayer;
     private PlaybackStateCompat.Builder mStateBuilder;
-    private SimpleExoPlayerView mPlayerView;
+
     private static MediaSessionCompat mMediaSession;
     Dialog mFullScreenDialog;
     boolean mExoPlayerFullscreen;
     private ImageView mFullScreenIcon;
     private FrameLayout mFullScreenButton;
     private View inflatedView;
+
+    @BindView(R.id.playerView)
+    SimpleExoPlayerView mPlayerView;
+    @BindView(R.id.step_desc)
+    TextView stepDescTextView;
+    @BindView(R.id.step_short_desc)
+    TextView stepShortTextView;
 
     public StepsFragment() {
         // Required empty public constructor
@@ -68,14 +77,14 @@ public class StepsFragment extends Fragment implements ExoPlayer.EventListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         if (savedInstanceState != null) {
             stepsList = savedInstanceState.getParcelableArrayList("list");
             stepIndex = savedInstanceState.getInt("index");
         }
         View view = inflater.inflate(R.layout.fragment_steps, container, false);
-        stepDescTextView = view.findViewById(R.id.step_desc);
-        stepShortTextView = view.findViewById(R.id.step_short_desc);
+        ButterKnife.bind(this, view);
+
+
         stepDescTextView.setVisibility(View.VISIBLE);
 
         if (stepIndex == -1 || stepIndex == 0)
@@ -90,8 +99,6 @@ public class StepsFragment extends Fragment implements ExoPlayer.EventListener {
 
         Log.d(TAG, "Created");
 
-
-        mPlayerView = view.findViewById(R.id.playerView);
 
         mPlayerView.setDefaultArtwork(BitmapFactory.decodeResource
                 (getResources(), R.drawable.ic_play_arrow));

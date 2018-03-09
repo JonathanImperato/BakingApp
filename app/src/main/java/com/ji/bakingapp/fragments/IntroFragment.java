@@ -1,6 +1,5 @@
 package com.ji.bakingapp.fragments;
 
-import android.app.Dialog;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -38,9 +36,12 @@ import com.google.android.exoplayer2.util.Util;
 import com.ji.bakingapp.R;
 import com.ji.bakingapp.utils.Ingredient;
 import com.ji.bakingapp.utils.Step;
-import com.ji.bakingapp.widget.IngredientsAdapter;
+import com.ji.bakingapp.adapters.IngredientsAdapter;
 
 import java.util.ArrayList;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * Created by jonathanimperato on 02/03/18.
@@ -50,16 +51,23 @@ public class IntroFragment extends Fragment implements ExoPlayer.EventListener {
 
     private SimpleExoPlayer mExoPlayer;
     private PlaybackStateCompat.Builder mStateBuilder;
-    private SimpleExoPlayerView mPlayerView;
+
     private static MediaSessionCompat mMediaSession;
-    Dialog mFullScreenDialog;
-    boolean mExoPlayerFullscreen;
+
     private ImageView mFullScreenIcon;
     private FrameLayout mFullScreenButton;
     private static final String TAG = "IntroFragment";
     private Step step;
     private ArrayList<Ingredient> ingredientArrayList;
+
+    @BindView(R.id.ingredientsRecyclerview)
     RecyclerView ingredientsRecyclerview;
+
+    @BindView(R.id.playerView)
+     SimpleExoPlayerView mPlayerView;
+
+    @BindView(R.id.fab2)
+    FloatingActionButton fab;
 
     public IntroFragment() {
         // Required empty public constructor
@@ -76,9 +84,7 @@ public class IntroFragment extends Fragment implements ExoPlayer.EventListener {
         }
 
         View view = inflater.inflate(R.layout.fragment_introduction, container, false);
-
-
-        mPlayerView = view.findViewById(R.id.playerView);
+        ButterKnife.bind(this, view);
         mPlayerView.setDefaultArtwork(BitmapFactory.decodeResource
                 (getResources(), R.drawable.ic_play_arrow));
 
@@ -90,14 +96,13 @@ public class IntroFragment extends Fragment implements ExoPlayer.EventListener {
         mFullScreenButton = mPlayerView.findViewById(R.id.exo_fullscreen_button);
         mFullScreenButton.setVisibility(View.GONE);
         mFullScreenIcon.setVisibility(View.GONE);
-        FloatingActionButton fab = view.findViewById(R.id.fab2);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                return;
+                return; //for future implementation
             }
         });
-        ingredientsRecyclerview = view.findViewById(R.id.ingredientsRecyclerview);
+
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         ingredientsRecyclerview.setNestedScrollingEnabled(false);
         ingredientsRecyclerview.setLayoutManager(linearLayoutManager);

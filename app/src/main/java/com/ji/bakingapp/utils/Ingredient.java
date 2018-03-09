@@ -19,6 +19,8 @@ public class Ingredient implements Parcelable{
         this.ingredient = ingredient;
     }
 
+    public Ingredient( ) {
+    }
 
     protected Ingredient(Parcel in) {
         if (in.readByte() == 0) {
