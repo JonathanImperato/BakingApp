@@ -101,10 +101,13 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
             public void onClick(View view) {
                 //update widget
                 //UpdateWidgetService.startBakingService(IntroductionActivity.this, food_ingredients);
-                if (!isFavourite())
+                if (!isFavourite()) {
                     insertData();
-                else removeData();
-                Snackbar.make(fab, R.string.recipe_added_to_widget, Snackbar.LENGTH_LONG).setAction("action", null).show();
+                    Snackbar.make(fab, R.string.recipe_added_to_widget, Snackbar.LENGTH_LONG).setAction("action", null).show();
+                } else {
+                    removeData();
+                    Snackbar.make(fab, R.string.recipe_removed_to_widget, Snackbar.LENGTH_LONG).setAction("action", null).show();
+                }
             }
         });
 
@@ -127,8 +130,8 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
         foodValues.put(ItemsContract.FoodEntry.COLUMN_FOOD_ID, foodID);
 
         insertDataIngredients();
-        this.getContentResolver().bulkInsert(ItemsContract.FoodEntry.CONTENT_URI_FOOD_TABLE,
-                new ContentValues[]{foodValues});
+        this.getContentResolver().insert(ItemsContract.FoodEntry.CONTENT_URI_FOOD_TABLE,
+                foodValues);
     }
 
     void insertDataIngredients() {
@@ -140,8 +143,8 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
             foodValues.put(ItemsContract.IngredientEntry.COLUMN_INGREDIENT_NAME, ingredient.getIngredient());
             foodValues.put(ItemsContract.IngredientEntry.COLUMN_INGREDIENT_QUANTITY, ingredient.getQuantity());
 
-            this.getContentResolver().bulkInsert(ItemsContract.IngredientEntry.CONTENT_URI_INGREDIENT_TABLE,
-                    new ContentValues[]{foodValues});
+            this.getContentResolver().insert(ItemsContract.IngredientEntry.CONTENT_URI_INGREDIENT_TABLE,
+                    foodValues);
         }
     }
 
@@ -158,12 +161,16 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
         Cursor c = this.getContentResolver().query(
                 ItemsContract.FoodEntry.CONTENT_URI_FOOD_TABLE,
                 null,
-                ItemsContract.FoodEntry.COLUMN_FOOD_ID + " = " + food.getId(),
+                ItemsContract.FoodEntry.COLUMN_FOOD_ID + " = " + foodID,
                 null,
                 null);
         return c.getCount() > 0;
 
     }
+
+    /**
+    * CONTENT PROVIDER STUFF FINISHES HERE
+    **/
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {

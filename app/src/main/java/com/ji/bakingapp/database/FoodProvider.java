@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 /**
  * Created by jonathanimperato on 09/03/18.
@@ -21,9 +22,6 @@ public class FoodProvider extends ContentProvider {
     //  private static final UriMatcher sUriMatcher = buildUriMatcher();
     private FoodDBHelper mOpenHelper;
 
-    // Codes for the UriMatcher //////
-    private static final int FOOD = 50;
-    private static final int FOOD_WITH_ID = 200;
 
     /*    private static UriMatcher buildUriMatcher() {
             // Build a UriMatcher by adding a specific code to return based on a match
@@ -47,52 +45,38 @@ public class FoodProvider extends ContentProvider {
     @Nullable
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-        Cursor retCursor;
-        retCursor = mOpenHelper.getReadableDatabase().query(
-                ItemsContract.FoodEntry.TABLE_FOOD,
-                projection,
-                selection,
-                selectionArgs,
-                null,
-                null,
-                sortOrder);
-        return retCursor;
-      /*  switch (sUriMatcher.match(uri)) {
-            // All Flavors selected
-            case FOOD: {
-                retCursor = mOpenHelper.getReadableDatabase().query(
-                        ItemsContract.FoodEntry.TABLE_FOOD,
-                        projection,
-                        selection,
-                        selectionArgs,
-                        null,
-                        null,
-                        sortOrder);
-                return retCursor;
-            }
-            // Individual flavor based on Id selected
-            case FOOD_WITH_ID: {
-                retCursor = mOpenHelper.getReadableDatabase().query(
-                        ItemsContract.FoodEntry.TABLE_FOOD,
-                        projection,
-                        ItemsContract.FoodEntry._ID + " = ?",
-                        new String[]{String.valueOf(ContentUris.parseId(uri))},
-                        null,
-                        null,
-                        sortOrder);
-                return retCursor;
-            }
-            default: {
-                // By default, we assume a bad URI
-                throw new UnsupportedOperationException("Unknown uri: " + uri);
-            }
-        }*/
+        if (uri.equals(ItemsContract.IngredientEntry.CONTENT_URI_INGREDIENT_TABLE)) { //IT IS THE INGREDIENT INSERT
+            Cursor retCursor;
+            retCursor = mOpenHelper.getReadableDatabase().query(
+                    ItemsContract.IngredientEntry.TABLE_INGREDIENTS,
+                    projection,
+                    selection,
+                    selectionArgs,
+                    null,
+                    null,
+                    sortOrder);
+            return retCursor;
+        } else {
+            Cursor retCursor;
+            retCursor = mOpenHelper.getReadableDatabase().query(
+                    ItemsContract.FoodEntry.TABLE_FOOD,
+                    projection,
+                    selection,
+                    selectionArgs,
+                    null,
+                    null,
+                    sortOrder);
+            return retCursor;
+        }
     }
 
     @Nullable
     @Override
     public String getType(@NonNull Uri uri) {
-        return ItemsContract.FoodEntry.CONTENT_ITEM_FOOD;
+        if (uri.equals(ItemsContract.IngredientEntry.CONTENT_URI_INGREDIENT_TABLE)) { //IT IS THE INGREDIENT INSERT
+            return ItemsContract.IngredientEntry.CONTENT_ITEM_INGREDIENT;
+        } else
+            return ItemsContract.FoodEntry.CONTENT_ITEM_FOOD;
 
         /*
         final int match = sUriMatcher.match(uri);
@@ -113,70 +97,54 @@ public class FoodProvider extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        final SQLiteDatabase    db = mOpenHelper.getWritableDatabase();
         Uri returnUri;
+        long _id = 0;
 
-        long _id = db.insert(ItemsContract.FoodEntry.TABLE_FOOD, null, values);
-        // insert unless it is already contained in the database
-        if (_id > 0) {
-            returnUri = ItemsContract.FoodEntry.buildFoodUriWithId(_id);
+        if (uri.equals(ItemsContract.IngredientEntry.CONTENT_URI_INGREDIENT_TABLE)) { //IT IS THE INGREDIENT INSERT
+
+            _id = db.insert(ItemsContract.IngredientEntry.TABLE_INGREDIENTS, null, values);
+            if (_id > 0) {
+                returnUri = ItemsContract.IngredientEntry.buildIngredientUriWithId(_id);
+            } else {
+                throw new android.database.SQLException("Failed to insert row into: " + uri);
+            }
         } else {
-            throw new android.database.SQLException("Failed to insert row into: " + uri);
-        }/*
-        switch (sUriMatcher.match(uri)) {
-            case FOOD: {
-                long _id = db.insert(ItemsContract.FoodEntry.TABLE_FOOD, null, values);
-                // insert unless it is already contained in the database
-                if (_id > 0) {
-                    returnUri = ItemsContract.FoodEntry.buildFoodUriWithId(_id);
-                } else {
-                    throw new android.database.SQLException("Failed to insert row into: " + uri);
-                }
-                break;
-            }
+            _id = db.insert(ItemsContract.FoodEntry.TABLE_FOOD, null, values);
 
-            default: {
-                throw new UnsupportedOperationException("Unknown uri: " + uri);
-
+            // insert unless it is already contained in the database
+            if (_id > 0) {
+                returnUri = ItemsContract.FoodEntry.buildFoodUriWithId(_id);
+            } else {
+                throw new android.database.SQLException("Failed to insert row into: " + uri);
             }
-        }*/
+        }
         getContext().getContentResolver().notifyChange(uri, null);
         return returnUri;
+
     }
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        final SQLiteDatabase    db = mOpenHelper.getWritableDatabase();
         //    final int match = sUriMatcher.match(uri);
         int numDeleted;
 
-        numDeleted = db.delete(
-                ItemsContract.FoodEntry.TABLE_FOOD, selection, selectionArgs);
-        // reset _ID
-        db.execSQL("DELETE FROM SQLITE_SEQUENCE WHERE NAME = '" +
-                ItemsContract.FoodEntry.TABLE_FOOD + "'");
-        /*
-        switch (match) {
-            case FOOD:
-                numDeleted = db.delete(
-                        MoviesContract.MoviesEntry.TABLE_MOVIES, selection, selectionArgs);
-                // reset _ID
-                db.execSQL("DELETE FROM SQLITE_SEQUENCE WHERE NAME = '" +
-                        MoviesContract.MoviesEntry.TABLE_MOVIES + "'");
-                break;
-            case FOOD_WITH_ID:
-                numDeleted = db.delete(MoviesContract.MoviesEntry.TABLE_MOVIES,
-                        MoviesContract.MoviesEntry._ID + " = ?",
-                        new String[]{String.valueOf(ContentUris.parseId(uri))});
-                // reset _ID
-                db.execSQL("DELETE FROM SQLITE_SEQUENCE WHERE NAME = '" +
-                        MoviesContract.MoviesEntry.TABLE_MOVIES + "'");
+        if (uri.equals(ItemsContract.IngredientEntry.CONTENT_URI_INGREDIENT_TABLE)) { //IT IS THE INGREDIENT INSERT
 
-                break;
-            default:
-                throw new UnsupportedOperationException("Unknown uri: " + uri);
+            numDeleted = db.delete(
+                    ItemsContract.IngredientEntry.TABLE_INGREDIENTS, selection, selectionArgs);
+            // reset _ID
+            db.execSQL("DELETE FROM SQLITE_SEQUENCE WHERE NAME = '" +
+                    ItemsContract.IngredientEntry.TABLE_INGREDIENTS + "'");
+        } else {
+            numDeleted = db.delete(
+                    ItemsContract.FoodEntry.TABLE_FOOD, selection, selectionArgs);
+            // reset _ID
+            db.execSQL("DELETE FROM SQLITE_SEQUENCE WHERE NAME = '" +
+                    ItemsContract.FoodEntry.TABLE_FOOD + "'");
         }
-*/
+
         return numDeleted;
     }
 
@@ -233,7 +201,8 @@ public class FoodProvider extends ContentProvider {
 
     @Override
     public int update(Uri uri, ContentValues contentValues, String selection, String[] selectionArgs) {
-        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+
+        final SQLiteDatabase    db = mOpenHelper.getWritableDatabase();
         int numUpdated = 0;
 
         if (contentValues == null) {
@@ -245,27 +214,7 @@ public class FoodProvider extends ContentProvider {
                 contentValues,
                 selection,
                 selectionArgs);
-        /*
-        switch (sUriMatcher.match(uri)) {
-            case FOOD: {
-                numUpdated = db.update(MoviesContract.MoviesEntry.TABLE_MOVIES,
-                        contentValues,
-                        selection,
-                        selectionArgs);
-                break;
-            }
-            case FOOD_WITH_ID: {
-                numUpdated = db.update(MoviesContract.MoviesEntry.TABLE_MOVIES,
-                        contentValues,
-                        MoviesContract.MoviesEntry._ID + " = ?",
-                        new String[]{String.valueOf(ContentUris.parseId(uri))});
-                break;
-            }
-            default: {
-                throw new UnsupportedOperationException("Unknown uri: " + uri);
-            }
-        }
-*/
+
         if (numUpdated > 0) {
             getContext().getContentResolver().notifyChange(uri, null);
         }

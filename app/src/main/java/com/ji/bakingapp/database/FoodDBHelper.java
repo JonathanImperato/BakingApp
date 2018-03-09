@@ -17,7 +17,7 @@ public class FoodDBHelper extends SQLiteOpenHelper {
     public static final String LOG_TAG = FoodDBHelper.class.getSimpleName();
 
     //name & version
-    private static final String DATABASE_NAME = "movies.db";
+    private static final String DATABASE_NAME = "recipes.db";
     private static final int DATABASE_VERSION = 1;
 
     public FoodDBHelper(Context context) {
@@ -26,7 +26,7 @@ public class FoodDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        final String SQL_CREATE_MOVIE_TABLE = "CREATE TABLE " +
+        final String SQL_CREATE_FOOD_TABLE = "CREATE TABLE " +
                 ItemsContract.FoodEntry.TABLE_FOOD + "(" + ItemsContract.FoodEntry._ID +
                 " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 ItemsContract.FoodEntry.COLUMN_FOOD_NAME +
@@ -36,7 +36,21 @@ public class FoodDBHelper extends SQLiteOpenHelper {
                 ItemsContract.FoodEntry.COLUMN_FOOD_SERVINGS +
                 " INTEGER NOT NULL);";
 
-        sqLiteDatabase.execSQL(SQL_CREATE_MOVIE_TABLE);
+        sqLiteDatabase.execSQL(SQL_CREATE_FOOD_TABLE);
+
+        final String SQL_CREATE_INGREDIENT_TABLE = "CREATE TABLE " +
+                ItemsContract.IngredientEntry.TABLE_INGREDIENTS + "(" + ItemsContract.IngredientEntry._ID +
+                " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                ItemsContract.IngredientEntry.COLUMN_INGREDIENT_NAME +
+                " TEXT NOT NULL, " +
+                ItemsContract.IngredientEntry.FOOD_ID +
+                " INTEGER NOT NULL, " +
+                ItemsContract.IngredientEntry.COLUMN_INGREDIENT_QUANTITY +
+                " DOUBLE NOT NULL, " +
+                ItemsContract.IngredientEntry.COLUMN_INGREDIENT_MEASURE +
+                " TEXT NOT NULL);";
+
+        sqLiteDatabase.execSQL(SQL_CREATE_INGREDIENT_TABLE);
     }
 
     @Override
@@ -48,6 +62,14 @@ public class FoodDBHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + ItemsContract.FoodEntry.TABLE_FOOD);
         sqLiteDatabase.execSQL("DELETE FROM SQLITE_SEQUENCE WHERE NAME = '" +
                 ItemsContract.FoodEntry.TABLE_FOOD + "'");
+
+        // re-create database
+        onCreate(sqLiteDatabase);
+
+
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + ItemsContract.IngredientEntry.TABLE_INGREDIENTS);
+        sqLiteDatabase.execSQL("DELETE FROM SQLITE_SEQUENCE WHERE NAME = '" +
+                ItemsContract.IngredientEntry.TABLE_INGREDIENTS + "'");
 
         // re-create database
         onCreate(sqLiteDatabase);

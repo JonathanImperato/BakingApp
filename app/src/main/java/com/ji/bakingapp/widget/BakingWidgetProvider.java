@@ -77,15 +77,14 @@ public class BakingWidgetProvider extends AppWidgetProvider {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if ("android.appwidget.action.APPWIDGET_UPDATE".equals(intent.getAction())) {
+       // if ("android.appwidget.action.APPWIDGET_UPDATE".equals(intent.getAction())) {
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
             int[] appwidgetIds = appWidgetManager.getAppWidgetIds(
                     new ComponentName(context, getClass())
             );
-
             appWidgetManager.notifyAppWidgetViewDataChanged(appwidgetIds, R.id.grid);
             onUpdate(context, appWidgetManager, appwidgetIds);
-        }
+      //  }
     }
 
     @Override
