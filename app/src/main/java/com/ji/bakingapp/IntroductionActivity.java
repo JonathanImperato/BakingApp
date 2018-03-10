@@ -6,6 +6,7 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -96,6 +97,13 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
         IngredientsAdapter adapter = new IngredientsAdapter(this, food_ingredients);
         ingredientsRecyclerview.setAdapter(adapter);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (!isFavourite()) { //i set the fab icon based on that favs
+                fab.setImageDrawable(this.getDrawable(R.drawable.ic_favorite_border_24dp));
+            } else {
+                fab.setImageDrawable(this.getDrawable(R.drawable.ic_favorite_full_24dp));
+            }
+        }
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -169,8 +177,8 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
     }
 
     /**
-    * CONTENT PROVIDER STUFF FINISHES HERE
-    **/
+     * CONTENT PROVIDER STUFF FINISHES HERE
+     **/
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
