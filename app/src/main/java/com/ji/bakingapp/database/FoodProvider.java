@@ -57,11 +57,12 @@ public class FoodProvider extends ContentProvider {
                     sortOrder);
             return retCursor;
         } else {
+
             Cursor retCursor;
             retCursor = mOpenHelper.getReadableDatabase().query(
                     ItemsContract.FoodEntry.TABLE_FOOD,
                     projection,
-                    selection,
+                    selection ,
                     selectionArgs,
                     null,
                     null,
@@ -97,7 +98,7 @@ public class FoodProvider extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        final SQLiteDatabase    db = mOpenHelper.getWritableDatabase();
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         Uri returnUri;
         long _id = 0;
 
@@ -126,7 +127,7 @@ public class FoodProvider extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        final SQLiteDatabase    db = mOpenHelper.getWritableDatabase();
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         //    final int match = sUriMatcher.match(uri);
         int numDeleted;
 
@@ -202,7 +203,7 @@ public class FoodProvider extends ContentProvider {
     @Override
     public int update(Uri uri, ContentValues contentValues, String selection, String[] selectionArgs) {
 
-        final SQLiteDatabase    db = mOpenHelper.getWritableDatabase();
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         int numUpdated = 0;
 
         if (contentValues == null) {

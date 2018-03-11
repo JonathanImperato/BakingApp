@@ -18,6 +18,7 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -77,7 +78,6 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
     private FrameLayout mFullScreenButton;
     ArrayList<Ingredient> food_ingredients;
     Food food;
-    int foodID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,27 +93,19 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
         food_ingredients = getIntent().getParcelableArrayListExtra("food_ingredients");
         Step step = getIntent().getParcelableExtra("step");
         food = getIntent().getParcelableExtra("food");
-        foodID = food.getId();
         IngredientsAdapter adapter = new IngredientsAdapter(this, food_ingredients);
         ingredientsRecyclerview.setAdapter(adapter);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (!isFavourite()) { //i set the fab icon based on that favs
-                fab.setImageDrawable(this.getDrawable(R.drawable.ic_favorite_border_24dp));
-            } else {
-                fab.setImageDrawable(this.getDrawable(R.drawable.ic_favorite_full_24dp));
-            }
-        }
+        correctFabImg();
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //update widget
-                //UpdateWidgetService.startBakingService(IntroductionActivity.this, food_ingredients);
                 if (!isFavourite()) {
                     insertData();
+                    correctFabImg();
                     Snackbar.make(fab, R.string.recipe_added_to_widget, Snackbar.LENGTH_LONG).setAction("action", null).show();
                 } else {
                     removeData();
+                    correctFabImg();
                     Snackbar.make(fab, R.string.recipe_removed_to_widget, Snackbar.LENGTH_LONG).setAction("action", null).show();
                 }
             }
@@ -128,25 +120,35 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
         initializePlayer(Uri.parse(step.getVideoURL()));
     }
 
+    void correctFabImg() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (!isFavourite()) { //i set the fab icon based on that favs
+                fab.setImageDrawable(this.getDrawable(R.drawable.ic_favorite_border_24dp));
+            } else {
+                fab.setImageDrawable(this.getDrawable(R.drawable.ic_favorite_full_24dp));
+            }
+        }
+    }
+
     /**
      * CONTENT PROVIDER STUFF
      */
     public void insertData() {
         ContentValues foodValues = new ContentValues();
-        foodValues.put(ItemsContract.FoodEntry.COLUMN_FOOD_NAME, food.getName());
+        foodValues.put(ItemsContract.FoodEntry.COLUMN_FOOD_NAME, food.getName().replace(" ", "_"));
         foodValues.put(ItemsContract.FoodEntry.COLUMN_FOOD_SERVINGS, food.getServings());
-        foodValues.put(ItemsContract.FoodEntry.COLUMN_FOOD_ID, foodID);
 
         insertDataIngredients();
         this.getContentResolver().insert(ItemsContract.FoodEntry.CONTENT_URI_FOOD_TABLE,
                 foodValues);
+
+        Log.d("INTRO ACTIVITY", "ADDED FAVOURITE " + food.getName().replace(" ", "_"));
     }
 
     void insertDataIngredients() {
-        int foodId = foodID;
         for (Ingredient ingredient : food_ingredients) { //TODO IMPLEMENT BULK INSERT
             ContentValues foodValues = new ContentValues();
-            foodValues.put(ItemsContract.IngredientEntry.FOOD_ID, foodId);
+            foodValues.put(ItemsContract.IngredientEntry.COLUMNS_FOOD_NAME, food.getName().replace(" ", "_"));
             foodValues.put(ItemsContract.IngredientEntry.COLUMN_INGREDIENT_MEASURE, ingredient.getMeasure());
             foodValues.put(ItemsContract.IngredientEntry.COLUMN_INGREDIENT_NAME, ingredient.getIngredient());
             foodValues.put(ItemsContract.IngredientEntry.COLUMN_INGREDIENT_QUANTITY, ingredient.getQuantity());
@@ -158,20 +160,24 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
 
     void removeData() {
         removeIngredients();
-        this.getContentResolver().delete(ItemsContract.FoodEntry.CONTENT_URI_FOOD_TABLE, ItemsContract.FoodEntry.COLUMN_FOOD_ID + " = " + foodID, null);
+        this.getContentResolver().delete(ItemsContract.FoodEntry.CONTENT_URI_FOOD_TABLE, ItemsContract.FoodEntry.COLUMN_FOOD_NAME + " = " + food.getName().replace(" ", "_"), null);
+        Log.d("INTRO ACTIVITY", "REMOVED FAVOURITE " + food.getName().replace(" ", "_"));
     }
 
     void removeIngredients() {
-        this.getContentResolver().delete(ItemsContract.IngredientEntry.CONTENT_URI_INGREDIENT_TABLE, ItemsContract.IngredientEntry.FOOD_ID + " = " + foodID, null);
+        this.getContentResolver().delete(ItemsContract.IngredientEntry.CONTENT_URI_INGREDIENT_TABLE, ItemsContract.IngredientEntry.COLUMNS_FOOD_NAME + " = " + food.getName().replace(" ", "_"), null);
     }
 
     boolean isFavourite() {
+        String newName = food.getName().replace(" ", "_");
+        String[] selections = {newName};
         Cursor c = this.getContentResolver().query(
                 ItemsContract.FoodEntry.CONTENT_URI_FOOD_TABLE,
                 null,
-                ItemsContract.FoodEntry.COLUMN_FOOD_ID + " = " + foodID,
-                null,
+                ItemsContract.FoodEntry.COLUMN_FOOD_NAME + " =? ",
+                selections,
                 null);
+
         return c.getCount() > 0;
 
     }

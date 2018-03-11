@@ -45,11 +45,10 @@
         <service
             android:name=".widget.GridWidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
-
         <provider
             android:name="com.ji.bakingapp.database.FoodProvider"
             android:authorities="com.ji.bakingapp.app"
-            android:exported="false"
+            android:exported="true"
             android:syncable="true" />
     </application>
 

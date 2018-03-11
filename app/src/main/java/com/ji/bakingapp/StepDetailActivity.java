@@ -44,7 +44,7 @@ public class StepDetailActivity extends AppCompatActivity implements View.OnClic
             food = bundle.getParcelableArrayList("food_step");
             index = bundle.getInt("stepIndex", 0);
             ingredients = bundle.getParcelableArrayList("food_ingredients");
-            food_name = this.getIntent().getStringExtra("food_name");
+            food_name = bundle.getString("food_name","");
 
             if (food_name.length() > 0)
                 this.setTitle(food_name);

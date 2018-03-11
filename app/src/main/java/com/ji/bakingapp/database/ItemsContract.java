@@ -24,8 +24,7 @@ public class ItemsContract {
         public static final String TABLE_FOOD = "food";
         // columns
         public static final String _ID = "_id";
-        public static final String COLUMN_FOOD_NAME = "name";
-        public static final String COLUMN_FOOD_ID = "food_id";
+        public static final String COLUMN_FOOD_NAME = "food_name";
         public static final String COLUMN_FOOD_SERVINGS = "servings";
 
         // create content uri
@@ -48,10 +47,10 @@ public class ItemsContract {
         public static final String TABLE_INGREDIENTS = "ingredients";
         // columns
         public static final String _ID = "_id";
-        public static final String COLUMN_INGREDIENT_NAME = "name";
-        public static final String FOOD_ID = "food_id";
+        public static final String COLUMN_INGREDIENT_NAME = "ingredient_name";
         public static final String COLUMN_INGREDIENT_QUANTITY = "quantity";
         public static final String COLUMN_INGREDIENT_MEASURE = "measure";
+        public static final String COLUMNS_FOOD_NAME = "food_name";
 
         // create content uri
         public static final Uri CONTENT_URI_INGREDIENT_TABLE = BASE_CONTENT_URI.buildUpon()

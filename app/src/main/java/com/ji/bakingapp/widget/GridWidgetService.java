@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
@@ -40,7 +39,7 @@ public class GridWidgetService extends RemoteViewsService {
 
         @Override
         public void onCreate() {
-
+            foodList = getFoods();
         }
 
         @Override
@@ -128,7 +127,7 @@ public class GridWidgetService extends RemoteViewsService {
             food.setServings(foodCursor.getInt(foodCursor
                     .getColumnIndex(ItemsContract.FoodEntry.COLUMN_FOOD_SERVINGS)));
             food.setName(foodCursor.getString(foodCursor
-                    .getColumnIndex(ItemsContract.FoodEntry.COLUMN_FOOD_NAME)));
+                    .getColumnIndex(ItemsContract.FoodEntry.COLUMN_FOOD_NAME)).replace("_", " "));
             return food;
         }
 
@@ -147,7 +146,7 @@ public class GridWidgetService extends RemoteViewsService {
             remoteViews.setTextViewText(R.id.servings_food, String.valueOf(foodList[i].getServings()) + " Servings");
             Intent fillInIntent = new Intent();
             //fillInIntent.putExtras(extras);
-            remoteViews.setOnClickFillInIntent(R.id.ingredient_widget_layout, fillInIntent);
+            //    remoteViews.setOnClickFillInIntent(R.id.ingredient_widget_layout, fillInIntent);
             return null;
         }
 

@@ -26,14 +26,13 @@ public class BakingWidgetProvider extends AppWidgetProvider {
 
     public static RemoteViews getRecipeGridRemoteView(Context context, int appWidgetId) {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.baking_widget_provider);
-        Intent appIntent = new Intent(context, MainActivity.class);
-
-        PendingIntent appPendingIntent = PendingIntent.getActivity(context, appWidgetId, appIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        views.setOnClickPendingIntent(R.id.grid, appPendingIntent);
 
         Intent gridIntent = new Intent(context, GridWidgetService.class);
         views.setRemoteAdapter(R.id.grid, gridIntent);
+        Intent appIntent = new Intent(context, MainActivity.class);
+        PendingIntent wateringPendingIntent = PendingIntent.getService(context, 0, appIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+   //     views.setOnClickPendingIntent(R.id.grid, wateringPendingIntent);
 
         return views;
     }

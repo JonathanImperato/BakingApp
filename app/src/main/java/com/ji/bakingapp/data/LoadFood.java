@@ -87,6 +87,10 @@ public class LoadFood extends android.support.v4.content.AsyncTaskLoader<Food[]>
                     String name = item.optString("name");
                     food.setName(name);
                 }
+                if (item.has("id")) {
+                    int id = item.optInt("id");
+                    food.setId(id);
+                }
                 if (item.has("servings")) {
                     int servings = item.optInt("servings");
                     food.setServings(servings);
