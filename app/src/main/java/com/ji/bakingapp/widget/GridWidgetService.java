@@ -123,7 +123,6 @@ public class GridWidgetService extends RemoteViewsService {
 
         private Food getFoodFromCursor(Cursor foodCursor) {
             Food food = new Food();
-
             food.setServings(foodCursor.getInt(foodCursor
                     .getColumnIndex(ItemsContract.FoodEntry.COLUMN_FOOD_SERVINGS)));
             food.setName(foodCursor.getString(foodCursor
@@ -162,7 +161,7 @@ public class GridWidgetService extends RemoteViewsService {
 
         @Override
         public long getItemId(int i) {
-            return foodList[i] != null ? foodList[i].getId() : i;
+            return i;
         }
 
         @Override
