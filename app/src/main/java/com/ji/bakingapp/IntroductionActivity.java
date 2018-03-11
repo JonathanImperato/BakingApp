@@ -2,6 +2,7 @@ package com.ji.bakingapp;
 
 import android.app.Dialog;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
@@ -18,9 +19,9 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
@@ -68,6 +69,9 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
     @BindView(R.id.fab)
     FloatingActionButton fab;
 
+    @BindView(R.id.next_btn)
+    Button nextBtn;
+
     private String TAG = this.getClass().getSimpleName();
     private SimpleExoPlayer mExoPlayer;
     private PlaybackStateCompat.Builder mStateBuilder;
@@ -76,25 +80,46 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
     boolean mExoPlayerFullscreen;
     private ImageView mFullScreenIcon;
     private FrameLayout mFullScreenButton;
+
     ArrayList<Ingredient> food_ingredients;
+    ArrayList<Step> food_step;
     Food food;
+    Step food_step_intro;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_introduction);
         ButterKnife.bind(this);
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         ingredientsRecyclerview.setNestedScrollingEnabled(false);
         ingredientsRecyclerview.setLayoutManager(linearLayoutManager);
 
         food_ingredients = getIntent().getParcelableArrayListExtra("food_ingredients");
-        Step step = getIntent().getParcelableExtra("step");
         food = getIntent().getParcelableExtra("food");
+        food_step = getIntent().getParcelableArrayListExtra("food_step");
+        food_step_intro = food_step.get(0);
+
         IngredientsAdapter adapter = new IngredientsAdapter(this, food_ingredients);
         ingredientsRecyclerview.setAdapter(adapter);
+
+        nextBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Bundle b = new Bundle();
+                b.putInt("stepIndex", 1);
+                b.putParcelableArrayList("food_step", food_step);
+                b.putParcelableArrayList("food_ingredients", food_ingredients);
+                b.putParcelable("food", food);
+
+                final Intent intent = new Intent(IntroductionActivity.this, StepDetailActivity.class);
+                intent.putExtras(b);
+                startActivity(intent);
+            }
+        });
+
         correctFabImg();
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -102,11 +127,11 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
                 if (!isFavourite()) {
                     insertData();
                     correctFabImg();
-                    Snackbar.make(fab, R.string.recipe_added_to_widget, Snackbar.LENGTH_LONG).setAction("action", null).show();
+                    Snackbar.make(toolbar, R.string.recipe_added_to_widget, Snackbar.LENGTH_LONG).setAction("action", null).show();
                 } else {
                     removeData();
                     correctFabImg();
-                    Snackbar.make(fab, R.string.recipe_removed_to_widget, Snackbar.LENGTH_LONG).setAction("action", null).show();
+                    Snackbar.make(toolbar, R.string.recipe_removed_to_widget, Snackbar.LENGTH_LONG).setAction("action", null).show();
                 }
             }
         });
@@ -116,8 +141,9 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
                 (getResources(), R.drawable.ic_play_arrow));
 
         // Initialize the Media Session.
+        mExoPlayerFullscreen = false;
         initializeMediaSession();
-        initializePlayer(Uri.parse(step.getVideoURL()));
+        initializePlayer(Uri.parse(food_step_intro.getVideoURL()));
     }
 
     void correctFabImg() {
@@ -142,7 +168,7 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
         this.getContentResolver().insert(ItemsContract.FoodEntry.CONTENT_URI_FOOD_TABLE,
                 foodValues);
 
-        Log.d("INTRO ACTIVITY", "ADDED FAVOURITE " + food.getName().replace(" ", "_"));
+
     }
 
     void insertDataIngredients() {
@@ -159,13 +185,23 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
     }
 
     void removeData() {
+        String newName = food.getName().replace(" ", "_");
+        String[] selections = {newName};
         removeIngredients();
-        this.getContentResolver().delete(ItemsContract.FoodEntry.CONTENT_URI_FOOD_TABLE, ItemsContract.FoodEntry.COLUMN_FOOD_NAME + " = " + food.getName().replace(" ", "_"), null);
-        Log.d("INTRO ACTIVITY", "REMOVED FAVOURITE " + food.getName().replace(" ", "_"));
+        this.getContentResolver().delete(ItemsContract.FoodEntry.CONTENT_URI_FOOD_TABLE,
+                ItemsContract.FoodEntry.COLUMN_FOOD_NAME + " =? ",
+                selections);
+
+
     }
 
     void removeIngredients() {
-        this.getContentResolver().delete(ItemsContract.IngredientEntry.CONTENT_URI_INGREDIENT_TABLE, ItemsContract.IngredientEntry.COLUMNS_FOOD_NAME + " = " + food.getName().replace(" ", "_"), null);
+        String newName = food.getName().replace(" ", "_");
+        String[] selections = {newName};
+        this.getContentResolver().delete(
+                ItemsContract.IngredientEntry.CONTENT_URI_INGREDIENT_TABLE,
+                ItemsContract.IngredientEntry.COLUMNS_FOOD_NAME + " =? ",
+                selections);
     }
 
     boolean isFavourite() {
@@ -192,7 +228,7 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             if (!mExoPlayerFullscreen)
                 openFullscreenMode(); //enter full screen if changes orientation to landscape
-        } else {
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
             if (mExoPlayerFullscreen) //on rotation change, if after rotated it is vertical
                 closeFullscreenMode(); //leave the full screen
         }
@@ -214,7 +250,6 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
     }
 
     private void openFullscreenMode() {
-
         ((ViewGroup) mPlayerView.getParent()).removeView(mPlayerView);
         mFullScreenDialog.addContentView(mPlayerView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         mFullScreenIcon.setImageDrawable(ContextCompat.getDrawable(IntroductionActivity.this, R.drawable.ic_fullscreen_skrink));

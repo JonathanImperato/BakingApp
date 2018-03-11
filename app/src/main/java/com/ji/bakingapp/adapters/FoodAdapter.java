@@ -98,8 +98,7 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.FoodAdapterVie
             mContext.startActivity(new Intent(mContext, SummaryActivity.class)
                     .putExtra("food_ingredients", food.getIngredients())
                     .putExtra("food_steps", food.getSteps())
-                    .putExtra("food", food)
-                    .putExtra("food_name", food.getName()));
+                    .putExtra("food", food));
         }
 
     }

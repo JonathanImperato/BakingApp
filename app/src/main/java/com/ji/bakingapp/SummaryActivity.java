@@ -42,15 +42,13 @@ public class SummaryActivity extends AppCompatActivity implements MasterListFrag
         super.onCreate(savedInstanceState);
         if (getIntent() != null) {
             food_step = this.getIntent().getParcelableArrayListExtra("food_steps");
-            food_name = this.getIntent().getStringExtra("food_name");
             ingredients = this.getIntent().getParcelableArrayListExtra("food_ingredients");
             food = this.getIntent().getParcelableExtra("food");
-            Log.d(this.getClass().getSimpleName(), "getIntent() != null");
+            food_name = food.getName();
         }
         if (savedInstanceState != null) {
             food_step = savedInstanceState.getParcelableArrayList("list");
             ingredients = savedInstanceState.getParcelableArrayList("food_ingredients");
-            Log.d(this.getClass().getSimpleName(), "savedInstanceState != null");
         }
         setContentView(R.layout.activity_summary);
         ButterKnife.bind(this);
@@ -94,9 +92,8 @@ public class SummaryActivity extends AppCompatActivity implements MasterListFrag
 
             } else //smartphone, so activity
                 startActivity(new Intent(SummaryActivity.this, IntroductionActivity.class)
-                        .putExtra("step", food_step.get(position))
+                        .putExtra("food_step", food_step)
                         .putExtra("food_ingredients", ingredients)
-                        .putExtra("food_name", food_name)
                         .putExtra("food", food));
         } else {
             if (mTwoPane) { //it means it is a tablet
@@ -116,7 +113,7 @@ public class SummaryActivity extends AppCompatActivity implements MasterListFrag
                 b.putInt("stepIndex", position);
                 b.putParcelableArrayList("food_step", food_step);
                 b.putParcelableArrayList("food_ingredients", ingredients);
-                b.putString("food_name", food_name);
+                b.putParcelable("food", food);
 
                 final Intent intent = new Intent(this, StepDetailActivity.class);
                 intent.putExtras(b);

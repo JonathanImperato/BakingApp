@@ -142,7 +142,7 @@ public class GridWidgetService extends RemoteViewsService {
             //  String measure = ingredientsListGrid.get(i).getMeasure();
             //  Double quantity = ingredientsListGrid.get(i).getQuantity();
             remoteViews.setTextViewText(R.id.title_food, foodList[i].getName());
-            remoteViews.setTextViewText(R.id.servings_food, String.valueOf(foodList[i].getServings()) + " Servings");
+      //      remoteViews.setTextViewText(R.id.servings_food, String.valueOf(foodList[i].getServings()) + " Servings");
             Intent fillInIntent = new Intent();
             //fillInIntent.putExtras(extras);
             //    remoteViews.setOnClickFillInIntent(R.id.ingredient_widget_layout, fillInIntent);
