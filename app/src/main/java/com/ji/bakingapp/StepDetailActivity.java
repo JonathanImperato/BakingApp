@@ -122,6 +122,8 @@ public class StepDetailActivity extends AppCompatActivity implements View.OnClic
                             .commit();
 
                     checkForButtonVisibility();
+                } else {
+                    finish();
                 }
 
                 break;
@@ -129,11 +131,8 @@ public class StepDetailActivity extends AppCompatActivity implements View.OnClic
     }
 
     void checkForButtonVisibility() {
-        if (index == 0) { //first item so need to hide prev button
-            previousButton.setVisibility(View.INVISIBLE);
-        } else previousButton.setVisibility(View.VISIBLE);
         if (index == food_step.size() - 1) { //last item so need to hide next button
-            nextButton.setVisibility(View.INVISIBLE);
-        } else nextButton.setVisibility(View.VISIBLE);
+            nextButton.setText(R.string.finish);
+        }
     }
 }

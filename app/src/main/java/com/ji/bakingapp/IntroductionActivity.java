@@ -116,7 +116,9 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
 
                 final Intent intent = new Intent(IntroductionActivity.this, StepDetailActivity.class);
                 intent.putExtras(b);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
+                finish();
             }
         });
 
