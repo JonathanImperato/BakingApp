@@ -112,18 +112,6 @@ public class StepsFragment extends Fragment implements ExoPlayer.EventListener {
         return view;
     }
 
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            if (!mExoPlayerFullscreen)
-                openFullscreenMode(); //enter full screen if changes orientation to landscape
-        } else {
-            if (mExoPlayerFullscreen) //on rotation change, if after rotated it is vertical
-                closeFullscreenMode(); //leave the full screen
-        }
-    }
-
     /**
      * FOLLOWED TUTORIAL BY Geoff Ledak
      * URL: https://geoffledak.com/blog/2017/09/11/how-to-add-a-fullscreen-toggle-button-to-exoplayer-in-android/
@@ -311,6 +299,15 @@ public class StepsFragment extends Fragment implements ExoPlayer.EventListener {
         if (mPlayerView.getVisibility() == View.VISIBLE) {
             initFullscreenMode();
             initFullscreenButton();
+
+            int Orientation = getResources().getConfiguration().orientation;
+            if (Orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                if (!mExoPlayerFullscreen)
+                    openFullscreenMode(); //enter full screen if changes orientation to landscape
+            } else {
+                if (mExoPlayerFullscreen) //on rotation change, if after rotated it is vertical
+                    closeFullscreenMode(); //leave the full screen
+            }
         }
     }
 

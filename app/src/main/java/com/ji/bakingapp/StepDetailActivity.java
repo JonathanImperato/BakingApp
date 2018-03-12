@@ -1,6 +1,7 @@
 package com.ji.bakingapp;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -55,6 +56,7 @@ public class StepDetailActivity extends AppCompatActivity implements View.OnClic
             food_name = food.getName();
             index = savedInstanceState.getInt("index");
         }
+
         StepsFragment stepFragment = new StepsFragment();
         if (food_name.length() > 0)
             this.setTitle(food_name);
@@ -161,4 +163,6 @@ public class StepDetailActivity extends AppCompatActivity implements View.OnClic
         food = savedInstanceState.getParcelable("food");
         ingredients = savedInstanceState.getParcelableArrayList("food_ingredients");
     }
+
+
 }
