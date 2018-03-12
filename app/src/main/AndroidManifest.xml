@@ -24,7 +24,6 @@
             android:parentActivityName=".MainActivity" />
         <activity
             android:name=".StepDetailActivity"
-            android:configChanges="orientation"
             android:parentActivityName=".SummaryActivity" />
         <activity
             android:name=".IntroductionActivity"
