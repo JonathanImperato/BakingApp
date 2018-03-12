@@ -74,7 +74,7 @@ public class FoodProvider extends ContentProvider {
                         null,
                         null,
                         sortOrder);
-                Log.wtf("QUERY RESULT SIZE", String.valueOf(retCursor.getCount()));
+
                 return retCursor;
             }
             default: {
