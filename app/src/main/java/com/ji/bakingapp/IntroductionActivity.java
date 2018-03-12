@@ -18,7 +18,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -103,7 +102,6 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
         IngredientsAdapter adapter = new IngredientsAdapter(this, food_ingredients);
         ingredientsRecyclerview.setAdapter(adapter);
 
-        Log.d("INTRO ACTIVITY RV AD", "SIZE " +ingredientsRecyclerview.getAdapter().getItemCount() );
         nextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -162,16 +160,7 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
      */
     //add favourite to DB by using content provider
     public void insertData() {
-        /*ContentValues foodValues = new ContentValues();
-        foodValues.put(ItemsContract.FoodEntry.COLUMN_FOOD_NAME, food.getName().replace(" ", "_"));
-        foodValues.put(ItemsContract.FoodEntry.COLUMN_FOOD_SERVINGS, food.getServings());
-        */
         insertDataIngredients();
-        /*this.getContentResolver().insert(
-        ItemsContract.FoodEntry.CONTENT_URI_FOOD_TABLE,
-        foodValues);
-        */
-
     }
 
     void insertDataIngredients() {
@@ -189,16 +178,7 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
 
     //remove favourite from DB by using content provider
     void removeData() {
-        /*String newName = food.getName().replace(" ", "_");
-        String[] selections = {newName};
-        */
         removeIngredients();
-        //IF WANT TO ADD FOOD NAMES TO WIDGET
-        /*this.getContentResolver().delete(ItemsContract.FoodEntry.CONTENT_URI_FOOD_TABLE,
-                ItemsContract.FoodEntry.COLUMN_FOOD_NAME + " =? ",
-                selections);
-        */
-
     }
 
     void removeIngredients() {
@@ -228,17 +208,8 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
      * CONTENT PROVIDER STUFF FINISHES HERE
      **/
 
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            if (!mExoPlayerFullscreen)
-                openFullscreenMode(); //enter full screen if changes orientation to landscape
-        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            if (mExoPlayerFullscreen) //on rotation change, if after rotated it is vertical
-                closeFullscreenMode(); //leave the full screen
-        }
-    }
+
+
 
     /**
      * FOLLOWED TUTORIAL BY Geoff Ledak
@@ -415,5 +386,13 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
         super.onResume();
         initFullscreenMode();
         initFullscreenButton();
+        int Orientation = getResources().getConfiguration().orientation;
+        if (Orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            if (!mExoPlayerFullscreen)
+                openFullscreenMode(); //enter full screen if changes orientation to landscape
+        } else {
+            if (mExoPlayerFullscreen) //on rotation change, if after rotated it is vertical
+                closeFullscreenMode(); //leave the full screen
+        }
     }
 }

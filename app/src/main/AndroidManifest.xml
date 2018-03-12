@@ -28,7 +28,6 @@
             android:parentActivityName=".SummaryActivity" />
         <activity
             android:name=".IntroductionActivity"
-            android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_ingredients"
             android:parentActivityName=".SummaryActivity"
             android:theme="@style/AppTheme.NoActionBar" />
