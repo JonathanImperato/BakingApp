@@ -41,7 +41,6 @@ public class StepDetailActivity extends AppCompatActivity implements View.OnClic
         Log.d(TAG, "Created");
         fragmentManager = getSupportFragmentManager();
         if (savedInstanceState == null) {
-            StepsFragment stepFragment = new StepsFragment();
             Bundle bundle = getIntent().getExtras();
             food_step = bundle.getParcelableArrayList("food_step");
             food = bundle.getParcelable("food");
@@ -49,17 +48,24 @@ public class StepDetailActivity extends AppCompatActivity implements View.OnClic
             ingredients = bundle.getParcelableArrayList("food_ingredients");
             food_name = food.getName();
 
-            if (food_name.length() > 0)
-                this.setTitle(food_name);
-            stepFragment.setStepsList(food_step);
-            stepFragment.setStepIndex(index);
-
-
-            fragmentManager.beginTransaction()
-                    .add(R.id.steps_container, stepFragment)
-                    .addToBackStack("backStack")
-                    .commit();
+        } else {
+            food_step = savedInstanceState.getParcelableArrayList("food_step");
+            food = savedInstanceState.getParcelable("food");
+            ingredients = savedInstanceState.getParcelableArrayList("food_ingredients");
+            food_name = food.getName();
+            index = savedInstanceState.getInt("index");
         }
+        StepsFragment stepFragment = new StepsFragment();
+        if (food_name.length() > 0)
+            this.setTitle(food_name);
+        stepFragment.setStepsList(food_step);
+        stepFragment.setStepIndex(index);
+
+
+        fragmentManager.beginTransaction()
+                .add(R.id.steps_container, stepFragment)
+                .addToBackStack("backStack")
+                .commit();
 
 
         checkForButtonVisibility();
@@ -136,5 +142,23 @@ public class StepDetailActivity extends AppCompatActivity implements View.OnClic
         } else { //last item so need to hide next button
             nextButton.setText(R.string.next);
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("index", index);
+        outState.putParcelableArrayList("food_step", food_step);
+        outState.putParcelable("food", food);
+        outState.putParcelableArrayList("food_ingredients", ingredients);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        index = savedInstanceState.getInt("index");
+        food_step = savedInstanceState.getParcelableArrayList("food_step");
+        food = savedInstanceState.getParcelable("food");
+        ingredients = savedInstanceState.getParcelableArrayList("food_ingredients");
     }
 }
