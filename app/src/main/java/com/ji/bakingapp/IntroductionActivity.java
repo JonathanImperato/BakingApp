@@ -18,7 +18,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -91,10 +91,8 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_introduction);
         ButterKnife.bind(this);
-        final Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        ingredientsRecyclerview.setNestedScrollingEnabled(false);
         ingredientsRecyclerview.setLayoutManager(linearLayoutManager);
 
         food_ingredients = getIntent().getParcelableArrayListExtra("food_ingredients");
@@ -105,6 +103,7 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
         IngredientsAdapter adapter = new IngredientsAdapter(this, food_ingredients);
         ingredientsRecyclerview.setAdapter(adapter);
 
+        Log.d("INTRO ACTIVITY RV AD", "SIZE " +ingredientsRecyclerview.getAdapter().getItemCount() );
         nextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -129,11 +128,11 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
                 if (!isFavourite()) {
                     insertData();
                     correctFabImg();
-                    Snackbar.make(toolbar, R.string.recipe_added_to_widget, Snackbar.LENGTH_LONG).setAction("action", null).show();
+                    Snackbar.make(fab, R.string.recipe_added_to_widget, Snackbar.LENGTH_LONG).setAction("action", null).show();
                 } else {
                     removeData();
                     correctFabImg();
-                    Snackbar.make(toolbar, R.string.recipe_removed_to_widget, Snackbar.LENGTH_LONG).setAction("action", null).show();
+                    Snackbar.make(fab, R.string.recipe_removed_to_widget, Snackbar.LENGTH_LONG).setAction("action", null).show();
                 }
             }
         });
@@ -176,7 +175,7 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
     }
 
     void insertDataIngredients() {
-        for (Ingredient ingredient : food_ingredients) { //TODO IMPLEMENT BULK INSERT
+        for (Ingredient ingredient : food_ingredients) {
             ContentValues foodValues = new ContentValues();
             foodValues.put(ItemsContract.IngredientEntry.COLUMNS_FOOD_NAME, food.getName().replace(" ", "_"));
             foodValues.put(ItemsContract.IngredientEntry.COLUMN_INGREDIENT_MEASURE, ingredient.getMeasure());

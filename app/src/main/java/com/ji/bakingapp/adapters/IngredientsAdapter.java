@@ -2,6 +2,7 @@ package com.ji.bakingapp.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,7 +36,6 @@ public class IngredientsAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
         String capTitle = ingredients.get(position).getIngredient().substring(0, 1).toUpperCase() + ingredients.get(position).getIngredient().substring(1);//title with first letter capitalized
-
         ((IngredientsAdapterViewHolder) holder).quantity.setText(ingredients.get(position).getQuantity() + " " + ingredients.get(position).getMeasure());
         ((IngredientsAdapterViewHolder) holder).title.setText(capTitle);
     }
