@@ -133,6 +133,8 @@ public class StepDetailActivity extends AppCompatActivity implements View.OnClic
     void checkForButtonVisibility() {
         if (index == food_step.size() - 1) { //last item so need to hide next button
             nextButton.setText(R.string.finish);
+        } else { //last item so need to hide next button
+            nextButton.setText(R.string.next);
         }
     }
 }

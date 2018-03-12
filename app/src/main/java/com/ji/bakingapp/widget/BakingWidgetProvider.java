@@ -18,22 +18,24 @@ import com.ji.bakingapp.R;
  * Implementation of App Widget functionality.
  */
 public class BakingWidgetProvider extends AppWidgetProvider {
-    static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
-                                int appWidgetId) {
-        RemoteViews remoteViews = getRecipeGridRemoteView(context, appWidgetId);
+
+
+    void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
+
+        RemoteViews remoteViews = getRecipeGridRemoteView(context);
+
         appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
     }
 
-    public static RemoteViews getRecipeGridRemoteView(Context context, int appWidgetId) {
+    public RemoteViews getRecipeGridRemoteView(Context context) {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.baking_widget_provider);
 
         Intent gridIntent = new Intent(context, GridWidgetService.class);
         views.setRemoteAdapter(R.id.grid, gridIntent);
+
         Intent appIntent = new Intent(context, MainActivity.class);
-        PendingIntent wateringPendingIntent = PendingIntent.getService(context, 0, appIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-   //     views.setOnClickPendingIntent(R.id.grid, wateringPendingIntent);
-
+        PendingIntent intent = PendingIntent.getActivity(context, 0, appIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        views.setPendingIntentTemplate(R.id.grid, intent);
         return views;
     }
 
@@ -60,9 +62,11 @@ public class BakingWidgetProvider extends AppWidgetProvider {
     public void onDisabled(Context context) {
     }
 
+
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (intent != null)
+        super.onReceive(context, intent);
+        if (intent != null) {
             if ("android.appwidget.action.APPWIDGET_UPDATE".equals(intent.getAction())) {
                 AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
                 int[] appwidgetIds = appWidgetManager.getAppWidgetIds(
@@ -71,6 +75,7 @@ public class BakingWidgetProvider extends AppWidgetProvider {
                 appWidgetManager.notifyAppWidgetViewDataChanged(appwidgetIds, R.id.grid);
                 onUpdate(context, appWidgetManager, appwidgetIds);
             }
+        }
     }
 
 

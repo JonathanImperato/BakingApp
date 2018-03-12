@@ -1,9 +1,13 @@
 package com.ji.bakingapp.fragments;
 
+import android.content.ContentValues;
+import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -34,9 +38,11 @@ import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.ji.bakingapp.R;
+import com.ji.bakingapp.adapters.IngredientsAdapter;
+import com.ji.bakingapp.database.ItemsContract;
+import com.ji.bakingapp.utils.Food;
 import com.ji.bakingapp.utils.Ingredient;
 import com.ji.bakingapp.utils.Step;
-import com.ji.bakingapp.adapters.IngredientsAdapter;
 
 import java.util.ArrayList;
 
@@ -58,13 +64,14 @@ public class IntroFragment extends Fragment implements ExoPlayer.EventListener {
     private FrameLayout mFullScreenButton;
     private static final String TAG = "IntroFragment";
     private Step step;
+    private Food food;
     private ArrayList<Ingredient> ingredientArrayList;
 
     @BindView(R.id.ingredientsRecyclerview)
     RecyclerView ingredientsRecyclerview;
 
     @BindView(R.id.playerView)
-     SimpleExoPlayerView mPlayerView;
+    SimpleExoPlayerView mPlayerView;
 
     @BindView(R.id.fab2)
     FloatingActionButton fab;
@@ -96,10 +103,21 @@ public class IntroFragment extends Fragment implements ExoPlayer.EventListener {
         mFullScreenButton = mPlayerView.findViewById(R.id.exo_fullscreen_button);
         mFullScreenButton.setVisibility(View.GONE);
         mFullScreenIcon.setVisibility(View.GONE);
+
+
+        correctFabImg();
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                return; //for future implementation
+                if (!isFavourite()) {
+                    insertDataIngredients();
+                    correctFabImg();
+                    Snackbar.make(mPlayerView, R.string.recipe_added_to_widget, Snackbar.LENGTH_LONG).setAction("action", null).show();
+                } else {
+                    removeIngredients();
+                    correctFabImg();
+                    Snackbar.make(mPlayerView, R.string.recipe_removed_to_widget, Snackbar.LENGTH_LONG).setAction("action", null).show();
+                }
             }
         });
 
@@ -108,8 +126,32 @@ public class IntroFragment extends Fragment implements ExoPlayer.EventListener {
         ingredientsRecyclerview.setLayoutManager(linearLayoutManager);
         IngredientsAdapter adapter = new IngredientsAdapter(getContext(), ingredientArrayList);
         ingredientsRecyclerview.setAdapter(adapter);
-        Log.d(TAG, "Created");
+
         return view;
+    }
+
+
+    void insertDataIngredients() {
+        for (Ingredient ingredient : ingredientArrayList) {
+            ContentValues foodValues = new ContentValues();
+            foodValues.put(ItemsContract.IngredientEntry.COLUMNS_FOOD_NAME, food.getName().replace(" ", "_"));
+            foodValues.put(ItemsContract.IngredientEntry.COLUMN_INGREDIENT_MEASURE, ingredient.getMeasure());
+            foodValues.put(ItemsContract.IngredientEntry.COLUMN_INGREDIENT_NAME, ingredient.getIngredient());
+            foodValues.put(ItemsContract.IngredientEntry.COLUMN_INGREDIENT_QUANTITY, ingredient.getQuantity());
+
+            getActivity().getContentResolver().insert(ItemsContract.IngredientEntry.CONTENT_URI_INGREDIENT_TABLE,
+                    foodValues);
+        }
+    }
+
+    //remove favourite from DB by using content provider
+    void removeIngredients() {
+        String newName = food.getName().replace(" ", "_");
+        String[] selections = {newName};
+        getActivity().getContentResolver().delete(
+                ItemsContract.IngredientEntry.CONTENT_URI_INGREDIENT_TABLE,
+                ItemsContract.IngredientEntry.COLUMNS_FOOD_NAME + " =? ",
+                selections);
     }
 
     public void setStep(Step step) {
@@ -120,12 +162,39 @@ public class IntroFragment extends Fragment implements ExoPlayer.EventListener {
         this.ingredientArrayList = ingredientArrayList;
     }
 
+    public void setFood(Food food) {
+        this.food = food;
+    }
+
     @Override
     public void onSaveInstanceState(Bundle currentState) {
         currentState.putParcelableArrayList("list", ingredientArrayList);
         currentState.putParcelable("step", step);
     }
 
+    boolean isFavourite() {
+        String newName = food.getName().replace(" ", "_");
+        String[] selections = {newName};
+        Cursor c = getActivity().getContentResolver().query(
+                ItemsContract.IngredientEntry.CONTENT_URI_INGREDIENT_TABLE,
+                null,
+                ItemsContract.FoodEntry.COLUMN_FOOD_NAME + " =? ",
+                selections,
+                null);
+
+        return c.getCount() > 0;
+
+    }
+
+    void correctFabImg() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (!isFavourite()) { //i set the fab icon based on that favs
+                fab.setImageDrawable(getActivity().getDrawable(R.drawable.ic_favorite_border_24dp));
+            } else {
+                fab.setImageDrawable(getActivity().getDrawable(R.drawable.ic_favorite_full_24dp));
+            }
+        }
+    }
 
     private void initializeMediaSession() {
 

@@ -9,7 +9,6 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.DisplayMetrics;
 
 import com.ji.bakingapp.adapters.FoodAdapter;
@@ -35,8 +34,8 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         int numberOfColumns = getNumberOfColumns();
         mRecyclerView.setHasFixedSize(true);
-        StaggeredGridLayoutManager lM = new StaggeredGridLayoutManager(numberOfColumns, StaggeredGridLayoutManager.VERTICAL);
-        GridLayoutManager layoutManager = new GridLayoutManager(this, numberOfColumns);
+        //  StaggeredGridLayoutManager lM = new StaggeredGridLayoutManager(numberOfColumns, StaggeredGridLayoutManager.VERTICAL);
+        GridLayoutManager lM = new GridLayoutManager(this, numberOfColumns);
         mRecyclerView.setLayoutManager(lM);
         if (isInternetAvailable()) {
             if (savedInstanceState != null) {

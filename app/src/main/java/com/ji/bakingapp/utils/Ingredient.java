@@ -11,6 +11,7 @@ public class Ingredient implements Parcelable{
     Double quantity;
     String measure;
     String ingredient;
+    String foodName;
 
     public Ingredient(Double quantity, String measure, String ingredient) {
 
@@ -20,6 +21,14 @@ public class Ingredient implements Parcelable{
     }
 
     public Ingredient( ) {
+    }
+
+    public String getFoodName() {
+        return foodName;
+    }
+
+    public void setFoodName(String foodName) {
+        this.foodName = foodName;
     }
 
     protected Ingredient(Parcel in) {

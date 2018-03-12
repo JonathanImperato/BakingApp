@@ -63,6 +63,7 @@ public class SummaryActivity extends AppCompatActivity implements MasterListFrag
             IntroFragment firstStep = new IntroFragment();
             firstStep.setIngredientArrayList(ingredients);
             firstStep.setStep(food_step.get(0));
+            firstStep.setFood(food);
 
             // Add the fragment to its container using a transaction
             fragmentManager.beginTransaction()
@@ -84,6 +85,7 @@ public class SummaryActivity extends AppCompatActivity implements MasterListFrag
                 IntroFragment newFragment = new IntroFragment();
                 newFragment.setIngredientArrayList(ingredients);
                 newFragment.setStep(food_step.get(position));
+                newFragment.setFood(food);
                 // Replace the old head fragment with a new one
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.steps_container, newFragment)

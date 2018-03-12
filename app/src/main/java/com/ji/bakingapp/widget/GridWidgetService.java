@@ -3,13 +3,12 @@ package com.ji.bakingapp.widget;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
+import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import com.ji.bakingapp.R;
 import com.ji.bakingapp.database.ItemsContract;
-import com.ji.bakingapp.utils.Food;
 import com.ji.bakingapp.utils.Ingredient;
 
 import java.util.ArrayList;
@@ -29,8 +28,7 @@ public class GridWidgetService extends RemoteViewsService {
 
 
         ArrayList<Ingredient> ingredientsListGrid;
-        Food[] foodList;
-
+        String latestHeader;
         Context mContext;
 
         public GridRemoteViewsFactory(Context mContext, Intent intent) {
@@ -39,12 +37,12 @@ public class GridWidgetService extends RemoteViewsService {
 
         @Override
         public void onCreate() {
-            foodList = getFoods();
+            ingredientsListGrid = getIngredients();
         }
 
         @Override
         public void onDataSetChanged() {
-            foodList = getFoods();
+            ingredientsListGrid = getIngredients();
         }
 
         @Override
@@ -54,19 +52,13 @@ public class GridWidgetService extends RemoteViewsService {
 
         @Override
         public int getCount() {
-            return (foodList != null) ? foodList.length : 0;
+            return (ingredientsListGrid != null) ? ingredientsListGrid.size() : 0;
         }
 
-        private ArrayList<Ingredient> getIngredients(long foodId) {
-            Uri baseIngredientUri = ItemsContract
-                    .IngredientEntry
-                    .CONTENT_URI_INGREDIENT_TABLE.buildUpon().build();
-
-            String ingredientUriString = baseIngredientUri.toString() + "/" + foodId;
-            Uri ingredientUri = Uri.parse(ingredientUriString);
+        private ArrayList<Ingredient> getIngredients() {
 
             Cursor ingredientCursor = mContext.getContentResolver()
-                    .query(ingredientUri,
+                    .query(ItemsContract.IngredientEntry.CONTENT_URI_INGREDIENT_TABLE,
                             null,
                             null,
                             null,
@@ -80,33 +72,9 @@ public class GridWidgetService extends RemoteViewsService {
                 }
                 ingredientCursor.close();
             }
+
+
             return ingredients;
-        }
-
-        private Food[] getFoods() {
-            Uri baseIngredientUri = ItemsContract
-                    .FoodEntry
-                    .CONTENT_URI_FOOD_TABLE.buildUpon().build();
-
-            String ingredientUriString = baseIngredientUri.toString();
-            Uri ingredientUri = Uri.parse(ingredientUriString);
-
-            Cursor ingredientCursor = mContext.getContentResolver()
-                    .query(ingredientUri,
-                            null,
-                            null,
-                            null,
-                            null);
-
-            Food[] foods = new Food[ingredientCursor.getCount()];
-            if (ingredientCursor != null) {
-                while (ingredientCursor.moveToNext()) {
-                    Food food = getFoodFromCursor(ingredientCursor);
-                    foods[ingredientCursor.getPosition()] = (food);
-                }
-                ingredientCursor.close();
-            }
-            return foods;
         }
 
         private Ingredient getIngredientFromCursor(Cursor ingredientCursor) {
@@ -118,35 +86,45 @@ public class GridWidgetService extends RemoteViewsService {
                     .getColumnIndex(ItemsContract.IngredientEntry.COLUMN_INGREDIENT_MEASURE)));
             ingredient.setQuantity(ingredientCursor.getDouble(ingredientCursor
                     .getColumnIndex(ItemsContract.IngredientEntry.COLUMN_INGREDIENT_QUANTITY)));
+
+            String name = ingredientCursor.getString(ingredientCursor
+                    .getColumnIndex(ItemsContract.IngredientEntry.COLUMNS_FOOD_NAME)).replace("_", " ");
+
+            if (ingredientCursor.getPosition() == 0 || !name.equals(latestHeader) || latestHeader == null) { // a sort of Section Header to divide foods ingredients
+                ingredient.setFoodName(name);
+                latestHeader = name;
+            }
             return ingredient;
         }
 
-        private Food getFoodFromCursor(Cursor foodCursor) {
-            Food food = new Food();
-            food.setServings(foodCursor.getInt(foodCursor
-                    .getColumnIndex(ItemsContract.FoodEntry.COLUMN_FOOD_SERVINGS)));
-            food.setName(foodCursor.getString(foodCursor
-                    .getColumnIndex(ItemsContract.FoodEntry.COLUMN_FOOD_NAME)).replace("_", " "));
-            return food;
-        }
 
         @Override
         public RemoteViews getViewAt(int i) {
 
-            if (foodList.length == 0) {
+            if (ingredientsListGrid.size() == 0) {
                 return null;
             }
 
             RemoteViews remoteViews = new RemoteViews(mContext.getPackageName(), R.layout.widget_ingredient_item_layout);
-            //  String title = ingredientsListGrid.get(i).getIngredient();
-            //  String measure = ingredientsListGrid.get(i).getMeasure();
-            //  Double quantity = ingredientsListGrid.get(i).getQuantity();
-            remoteViews.setTextViewText(R.id.title_food, foodList[i].getName());
-      //      remoteViews.setTextViewText(R.id.servings_food, String.valueOf(foodList[i].getServings()) + " Servings");
+
+            Ingredient ingredient = ingredientsListGrid.get(i);
+            if (ingredient.getFoodName() != null) {
+                remoteViews.setTextViewText(R.id.food_name, ingredient.getFoodName());
+                remoteViews.setViewVisibility(R.id.food_name, View.VISIBLE);
+                remoteViews.setViewVisibility(R.id.food_name_layout, View.VISIBLE);
+            } else {
+                remoteViews.setViewVisibility(R.id.food_name, View.GONE);
+                remoteViews.setViewVisibility(R.id.food_name_layout, View.GONE);
+            }
+
+            remoteViews.setTextViewText(R.id.ingredient_name, ingredientsListGrid.get(i).getIngredient());
+            remoteViews.setTextViewText(R.id.ingredient_quantity, ingredient.getQuantity() + " " + ingredient.getMeasure());
+
+
             Intent fillInIntent = new Intent();
-            //fillInIntent.putExtras(extras);
-            //    remoteViews.setOnClickFillInIntent(R.id.ingredient_widget_layout, fillInIntent);
-            return null;
+            remoteViews.setOnClickFillInIntent(R.id.ingredient_widget_layout, fillInIntent);
+
+            return remoteViews;
         }
 
         @Override

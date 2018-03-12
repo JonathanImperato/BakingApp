@@ -1,25 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:padding="8dp"
     android:id="@+id/ingredient_widget_layout"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
+    <LinearLayout
+        android:orientation="horizontal"
+        android:id="@+id/food_name_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorAccent"
+        android:elevation="@dimen/cardview_default_elevation">
+
+        <TextView
+            android:id="@+id/food_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="8dp"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            tools:text="Food Name"></TextView>
+    </LinearLayout>
+
     <TextView
-        android:id="@+id/title_food"
+        android:id="@+id/ingredient_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        android:drawableLeft="@drawable/food"
-        android:drawablePadding="8dp"
-        android:gravity="center"
         android:textColor="@color/black"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/img"
-        tools:text="Drink"></TextView>
+        tools:text="Ingredient Name"></TextView>
+
+    <TextView
+        android:id="@+id/ingredient_quantity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:textColor="@color/black"
+        tools:text="Ingredient quantity"></TextView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_height="1dp"
+        android:background="#BEBEBE"></LinearLayout>
 
 </LinearLayout>

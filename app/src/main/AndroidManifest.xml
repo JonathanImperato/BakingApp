@@ -42,9 +42,11 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/baking_widget_info" />
         </receiver>
+
         <service
             android:name=".widget.GridWidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
+
         <provider
             android:name="com.ji.bakingapp.database.FoodProvider"
             android:authorities="com.ji.bakingapp.app"

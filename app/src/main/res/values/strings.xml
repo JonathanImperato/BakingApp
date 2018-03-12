@@ -18,7 +18,7 @@
     <string name="next">Next</string>
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
-    <string name="recipe_added_to_widget">Recipe added as favourite for widget.</string>
-    <string name="recipe_removed_to_widget">Recipe removed as favourite for widget.</string>
+    <string name="recipe_added_to_widget">Ingredients added to widget.</string>
+    <string name="recipe_removed_to_widget">Ingredients removed from widget.</string>
     <string name="finish">FINISH</string>
 </resources>

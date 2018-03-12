@@ -161,15 +161,17 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
     /**
      * CONTENT PROVIDER STUFF
      */
+    //add favourite to DB by using content provider
     public void insertData() {
-        ContentValues foodValues = new ContentValues();
+        /*ContentValues foodValues = new ContentValues();
         foodValues.put(ItemsContract.FoodEntry.COLUMN_FOOD_NAME, food.getName().replace(" ", "_"));
         foodValues.put(ItemsContract.FoodEntry.COLUMN_FOOD_SERVINGS, food.getServings());
-
+        */
         insertDataIngredients();
-        this.getContentResolver().insert(ItemsContract.FoodEntry.CONTENT_URI_FOOD_TABLE,
-                foodValues);
-
+        /*this.getContentResolver().insert(
+        ItemsContract.FoodEntry.CONTENT_URI_FOOD_TABLE,
+        foodValues);
+        */
 
     }
 
@@ -186,14 +188,17 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
         }
     }
 
+    //remove favourite from DB by using content provider
     void removeData() {
-        String newName = food.getName().replace(" ", "_");
+        /*String newName = food.getName().replace(" ", "_");
         String[] selections = {newName};
+        */
         removeIngredients();
-        this.getContentResolver().delete(ItemsContract.FoodEntry.CONTENT_URI_FOOD_TABLE,
+        //IF WANT TO ADD FOOD NAMES TO WIDGET
+        /*this.getContentResolver().delete(ItemsContract.FoodEntry.CONTENT_URI_FOOD_TABLE,
                 ItemsContract.FoodEntry.COLUMN_FOOD_NAME + " =? ",
                 selections);
-
+        */
 
     }
 
@@ -210,7 +215,7 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
         String newName = food.getName().replace(" ", "_");
         String[] selections = {newName};
         Cursor c = this.getContentResolver().query(
-                ItemsContract.FoodEntry.CONTENT_URI_FOOD_TABLE,
+                ItemsContract.IngredientEntry.CONTENT_URI_INGREDIENT_TABLE,
                 null,
                 ItemsContract.FoodEntry.COLUMN_FOOD_NAME + " =? ",
                 selections,
