@@ -15,6 +15,7 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -82,20 +83,7 @@ public class IntroFragment extends Fragment implements ExoPlayer.EventListener {
         // Required empty public constructor
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
 
-        if (savedInstanceState != null) {
-            ingredientArrayList = savedInstanceState.getParcelableArrayList("list");
-            step = savedInstanceState.getParcelable("step");
-            long tempPos = savedInstanceState.getLong("videoPos");
-            if (tempPos > 0)
-                videoPosition = tempPos;
-            food = savedInstanceState.getParcelable("food");
-        }
-
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -104,20 +92,19 @@ public class IntroFragment extends Fragment implements ExoPlayer.EventListener {
         if (savedInstanceState != null) {
             ingredientArrayList = savedInstanceState.getParcelableArrayList("list");
             step = savedInstanceState.getParcelable("step");
-            long tempPos = savedInstanceState.getLong("videoPos");
-            if (tempPos > 0)
-                videoPosition = tempPos;
+            videoPosition = savedInstanceState.getLong("videoPos");
             food = savedInstanceState.getParcelable("food");
+            Log.d(TAG,"onActivityCreated savedInstanceState valye " + videoPosition);
         }
 
         View view = inflater.inflate(R.layout.fragment_introduction, container, false);
         ButterKnife.bind(this, view);
-        mPlayerView.setDefaultArtwork(BitmapFactory.decodeResource
-                (getResources(), R.drawable.ic_play_arrow));
+        mPlayerView.setDefaultArtwork(BitmapFactory.decodeResource (getResources(), R.drawable.ic_play_arrow));
         // Initialize the Media Session.
         if (step != null && !TextUtils.isEmpty(step.getVideoURL())) {
             initializeMediaSession();
             initializePlayer(Uri.parse(step.getVideoURL()));
+            Log.d(TAG,"valye " + videoPosition);
         }
         mFullScreenIcon = mPlayerView.findViewById(R.id.exo_fullscreen_icon);
         mFullScreenButton = mPlayerView.findViewById(R.id.exo_fullscreen_button);
@@ -248,6 +235,7 @@ public class IntroFragment extends Fragment implements ExoPlayer.EventListener {
         // Start the Media Session since the activity is active.
         mMediaSession.setActive(true);
 
+        Log.d(TAG,"valye " + videoPosition);
 
     }
 
@@ -261,7 +249,7 @@ public class IntroFragment extends Fragment implements ExoPlayer.EventListener {
 
             // Set the ExoPlayer.EventListener to this activity.
             mExoPlayer.addListener(this);
-
+            Log.d(TAG,"valye " + videoPosition);
             if (videoPosition > 0) {
                 mExoPlayer.seekTo(videoPosition);
             }

@@ -3,7 +3,6 @@ package com.ji.bakingapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -47,35 +46,38 @@ public class SummaryActivity extends AppCompatActivity implements MasterListFrag
             food = this.getIntent().getParcelableExtra("food");
             food_name = food.getName();
         }
-        if (savedInstanceState != null) {
+        setContentView(R.layout.activity_summary);
+        if (savedInstanceState == null) {
+            ButterKnife.bind(this);
+            Log.d(this.getClass().getSimpleName(), "Created");
+            if (food_name.length() > 0)
+                this.setTitle(food_name);
+            mTwoPane = false;
+            if (fragmentStepContainer != null) {
+                mTwoPane = true;
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                //on created activity i just show the first step that is the introductional one
+                IntroFragment firstStep = new IntroFragment();
+                firstStep.setIngredientArrayList(ingredients);
+                firstStep.setStep(food_step.get(0));
+                firstStep.setFood(food);
+
+                // Add the fragment to its container using a transaction
+                fragmentManager.beginTransaction()
+                        .add(R.id.steps_container, firstStep)
+                        .addToBackStack("backStack")
+                        .commit();
+
+            } else {
+                mTwoPane = false;
+
+            }
+        } else {
             food_step = savedInstanceState.getParcelableArrayList("list");
             ingredients = savedInstanceState.getParcelableArrayList("food_ingredients");
-        }
-        setContentView(R.layout.activity_summary);
-        ButterKnife.bind(this);
-        Log.d(this.getClass().getSimpleName(), "Created");
-        if (food_name.length() > 0)
-            this.setTitle(food_name);
-        mTwoPane = false;
-        if (fragmentStepContainer != null) {
-            mTwoPane = true;
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            //on created activity i just show the first step that is the introductional one
-            IntroFragment firstStep = new IntroFragment();
-            firstStep.setIngredientArrayList(ingredients);
-            firstStep.setStep(food_step.get(0));
-            firstStep.setFood(food);
-
-            // Add the fragment to its container using a transaction
-            fragmentManager.beginTransaction()
-                    .add(R.id.steps_container, firstStep)
-                    .addToBackStack("backStack")
-                    .commit();
-
-        } else {
-            mTwoPane = false;
 
         }
+
     }
 
 
