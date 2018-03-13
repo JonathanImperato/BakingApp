@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -13,7 +14,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,6 +65,7 @@ public class IntroFragment extends Fragment implements ExoPlayer.EventListener {
     private FrameLayout mFullScreenButton;
     private static final String TAG = "IntroFragment";
     private Step step;
+    public long videoPosition;
     private Food food;
     private ArrayList<Ingredient> ingredientArrayList;
 
@@ -80,6 +82,20 @@ public class IntroFragment extends Fragment implements ExoPlayer.EventListener {
         // Required empty public constructor
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            ingredientArrayList = savedInstanceState.getParcelableArrayList("list");
+            step = savedInstanceState.getParcelable("step");
+            long tempPos = savedInstanceState.getLong("videoPos");
+            if (tempPos > 0)
+                videoPosition = tempPos;
+            food = savedInstanceState.getParcelable("food");
+        }
+
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -88,17 +104,21 @@ public class IntroFragment extends Fragment implements ExoPlayer.EventListener {
         if (savedInstanceState != null) {
             ingredientArrayList = savedInstanceState.getParcelableArrayList("list");
             step = savedInstanceState.getParcelable("step");
+            long tempPos = savedInstanceState.getLong("videoPos");
+            if (tempPos > 0)
+                videoPosition = tempPos;
+            food = savedInstanceState.getParcelable("food");
         }
 
         View view = inflater.inflate(R.layout.fragment_introduction, container, false);
         ButterKnife.bind(this, view);
         mPlayerView.setDefaultArtwork(BitmapFactory.decodeResource
                 (getResources(), R.drawable.ic_play_arrow));
-
         // Initialize the Media Session.
-        initializeMediaSession();
-        initializePlayer(Uri.parse(step.getVideoURL()));
-
+        if (step != null && !TextUtils.isEmpty(step.getVideoURL())) {
+            initializeMediaSession();
+            initializePlayer(Uri.parse(step.getVideoURL()));
+        }
         mFullScreenIcon = mPlayerView.findViewById(R.id.exo_fullscreen_icon);
         mFullScreenButton = mPlayerView.findViewById(R.id.exo_fullscreen_button);
         mFullScreenButton.setVisibility(View.GONE);
@@ -170,6 +190,9 @@ public class IntroFragment extends Fragment implements ExoPlayer.EventListener {
     public void onSaveInstanceState(Bundle currentState) {
         currentState.putParcelableArrayList("list", ingredientArrayList);
         currentState.putParcelable("step", step);
+        if (mExoPlayer != null)
+            currentState.putLong("videoPos", mExoPlayer.getCurrentPosition());
+        currentState.putParcelable("food", food);
     }
 
     boolean isFavourite() {
@@ -228,7 +251,7 @@ public class IntroFragment extends Fragment implements ExoPlayer.EventListener {
 
     }
 
-    private void initializePlayer(Uri mediaUri) {
+    private void initializePlayer(Uri mediaUri ) {
         if (mExoPlayer == null) {
             // Create an instance of the ExoPlayer.
             TrackSelector trackSelector = new DefaultTrackSelector();
@@ -239,17 +262,20 @@ public class IntroFragment extends Fragment implements ExoPlayer.EventListener {
             // Set the ExoPlayer.EventListener to this activity.
             mExoPlayer.addListener(this);
 
+            if (videoPosition > 0) {
+                mExoPlayer.seekTo(videoPosition);
+            }
             // Prepare the MediaSource.
             String userAgent = Util.getUserAgent(getActivity(), "BakingApp");
             MediaSource mediaSource = new ExtractorMediaSource(mediaUri, new DefaultDataSourceFactory(
                     getActivity(), userAgent), new DefaultExtractorsFactory(), null, null);
             mExoPlayer.prepare(mediaSource);
             mExoPlayer.setPlayWhenReady(false); //default it does not start automatically
+
         }
     }
 
     private void releasePlayer() {
-
         mExoPlayer.stop();
         mExoPlayer.release();
         mExoPlayer = null;
@@ -313,7 +339,8 @@ public class IntroFragment extends Fragment implements ExoPlayer.EventListener {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        releasePlayer();
+        if (mExoPlayer != null)
+            releasePlayer();
     }
 
     @Override
@@ -321,4 +348,10 @@ public class IntroFragment extends Fragment implements ExoPlayer.EventListener {
         super.onResume();
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mExoPlayer != null)
+            releasePlayer();
+    }
 }

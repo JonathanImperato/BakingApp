@@ -6,10 +6,12 @@ import android.content.res.Configuration;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,6 +39,7 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.ji.bakingapp.R;
 import com.ji.bakingapp.utils.Step;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -61,18 +64,29 @@ public class StepsFragment extends Fragment implements ExoPlayer.EventListener {
     private ImageView mFullScreenIcon;
     private FrameLayout mFullScreenButton;
     private View inflatedView;
-
+    private long videoPosition;
     @BindView(R.id.playerView)
     SimpleExoPlayerView mPlayerView;
     @BindView(R.id.step_desc)
     TextView stepDescTextView;
     @BindView(R.id.step_short_desc)
     TextView stepShortTextView;
+    @BindView(R.id.thumbnail)
+    ImageView thumbnailImageView;
 
     public StepsFragment() {
         // Required empty public constructor
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (savedInstanceState != null) {
+            stepsList = savedInstanceState.getParcelableArrayList("list");
+            stepIndex = savedInstanceState.getInt("index");
+            videoPosition = savedInstanceState.getLong("video_pos");
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -80,6 +94,7 @@ public class StepsFragment extends Fragment implements ExoPlayer.EventListener {
         if (savedInstanceState != null) {
             stepsList = savedInstanceState.getParcelableArrayList("list");
             stepIndex = savedInstanceState.getInt("index");
+            videoPosition = savedInstanceState.getLong("video_pos");
         }
         View view = inflater.inflate(R.layout.fragment_steps, container, false);
         ButterKnife.bind(this, view);
@@ -103,11 +118,16 @@ public class StepsFragment extends Fragment implements ExoPlayer.EventListener {
         mPlayerView.setDefaultArtwork(BitmapFactory.decodeResource
                 (getResources(), R.drawable.ic_play_arrow));
         String videoUrl = stepsList.get(stepIndex).getVideoURL();
-        if (!videoUrl.isEmpty()) {
-            // Initialize the Media Session if the video URL is not null
+        String thumbnailUrl = stepsList.get(stepIndex).getThumbnailURL();
+
+        if (!TextUtils.isEmpty(videoUrl)) {
             initializeMediaSession();
             initializePlayer(Uri.parse(videoUrl));
         } else mPlayerView.setVisibility(View.GONE);
+        if (!TextUtils.isEmpty(thumbnailUrl)) {
+            Picasso.get().load(thumbnailUrl).into(thumbnailImageView);
+            thumbnailImageView.setVisibility(View.VISIBLE);
+        } else thumbnailImageView.setVisibility(View.GONE);
         inflatedView = view;
         return view;
     }
@@ -164,14 +184,14 @@ public class StepsFragment extends Fragment implements ExoPlayer.EventListener {
         }
     }
 
+    /**
+     * FINISHES HERE
+     */
+
     boolean isATablet() {
         boolean tabletSize = getResources().getBoolean(R.bool.isTablet);
         return tabletSize;
     }
-
-    /**
-     * FINISHES HERE
-     */
 
     private void initializeMediaSession() {
 
@@ -215,7 +235,9 @@ public class StepsFragment extends Fragment implements ExoPlayer.EventListener {
 
             // Set the ExoPlayer.EventListener to this activity.
             mExoPlayer.addListener(this);
-
+            if (videoPosition > 0) {
+                mExoPlayer.seekTo(videoPosition);
+            }
             // Prepare the MediaSource.
             String userAgent = Util.getUserAgent(getContext(), "BakingApp");
             MediaSource mediaSource = new ExtractorMediaSource(mediaUri, new DefaultDataSourceFactory(
@@ -289,7 +311,7 @@ public class StepsFragment extends Fragment implements ExoPlayer.EventListener {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (mPlayerView.getVisibility() == View.VISIBLE)
+        if (mPlayerView.getVisibility() == View.VISIBLE && mExoPlayer != null)
             releasePlayer();
     }
 
@@ -301,7 +323,7 @@ public class StepsFragment extends Fragment implements ExoPlayer.EventListener {
             initFullscreenButton();
 
             int Orientation = getResources().getConfiguration().orientation;
-            if (Orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            if (Orientation == Configuration.ORIENTATION_LANDSCAPE && !isATablet()) {
                 if (!mExoPlayerFullscreen)
                     openFullscreenMode(); //enter full screen if changes orientation to landscape
             } else {
@@ -310,6 +332,14 @@ public class StepsFragment extends Fragment implements ExoPlayer.EventListener {
             }
         }
     }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mExoPlayer != null)
+            releasePlayer();
+    }
+
 
     public void setStepIndex(int stepIndex) {
         this.stepIndex = stepIndex;
@@ -323,5 +353,7 @@ public class StepsFragment extends Fragment implements ExoPlayer.EventListener {
     public void onSaveInstanceState(Bundle currentState) {
         currentState.putParcelableArrayList("list", stepsList);
         currentState.putInt("index", stepIndex);
+        if (mExoPlayer != null)
+            currentState.putLong("video_pos", mExoPlayer.getCurrentPosition());
     }
 }

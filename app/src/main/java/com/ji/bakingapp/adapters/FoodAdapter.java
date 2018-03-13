@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,10 +45,10 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.FoodAdapterVie
         holder.servings.setText(mFoodList[position].getServings() + " Servings");
         Drawable img = null;
         String imgUrl = mFoodList[position].getImage();
-        if (img != null && !imgUrl.isEmpty() && imgUrl.length() > 0) //it means that there is an image
+        if (!TextUtils.isEmpty(imgUrl)) //it means that there is an image
         {
             holder.thumbnail.setVisibility(View.VISIBLE);
-            Picasso.with(mContext).load(imgUrl).into(holder.thumbnail);
+            Picasso.get().load(imgUrl).into(holder.thumbnail);
         } else {
             /*switch (position) {
                 case 0:

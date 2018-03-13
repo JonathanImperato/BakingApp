@@ -11,8 +11,7 @@
         android:id="@+id/fullpage"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="50dp"
-        >
+        android:layout_marginBottom="50dp">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
@@ -61,9 +60,9 @@
                         android:id="@+id/ingredientsRecyclerview"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:nestedScrollingEnabled="false"
                         android:clipToPadding="true"
                         android:isScrollContainer="false"
+                        android:nestedScrollingEnabled="false"
                         app:layout_constraintTop_toBottomOf="@id/ingredients_title"
                         tools:listitem="@layout/ingredient_item" />
 

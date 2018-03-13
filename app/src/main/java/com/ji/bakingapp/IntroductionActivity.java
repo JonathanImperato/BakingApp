@@ -79,7 +79,7 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
     boolean mExoPlayerFullscreen;
     private ImageView mFullScreenIcon;
     private FrameLayout mFullScreenButton;
-
+    private long videoPosition;
     ArrayList<Ingredient> food_ingredients;
     ArrayList<Step> food_step;
     Food food;
@@ -93,12 +93,18 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         ingredientsRecyclerview.setLayoutManager(linearLayoutManager);
-
-        food_ingredients = getIntent().getParcelableArrayListExtra("food_ingredients");
-        food = getIntent().getParcelableExtra("food");
-        food_step = getIntent().getParcelableArrayListExtra("food_step");
-        food_step_intro = food_step.get(0);
-
+        if (savedInstanceState != null) {
+            videoPosition = savedInstanceState.getLong("videoPosition");
+            food_ingredients = savedInstanceState.getParcelableArrayList("food_ingredients");
+            food = savedInstanceState.getParcelable("food");
+            food_step = savedInstanceState.getParcelableArrayList("food_step");
+            food_step_intro = food_step.get(0);
+        } else {
+            food_ingredients = getIntent().getParcelableArrayListExtra("food_ingredients");
+            food = getIntent().getParcelableExtra("food");
+            food_step = getIntent().getParcelableArrayListExtra("food_step");
+            food_step_intro = food_step.get(0);
+        }
         IngredientsAdapter adapter = new IngredientsAdapter(this, food_ingredients);
         ingredientsRecyclerview.setAdapter(adapter);
 
@@ -209,8 +215,6 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
      **/
 
 
-
-
     /**
      * FOLLOWED TUTORIAL BY Geoff Ledak
      * URL: https://geoffledak.com/blog/2017/09/11/how-to-add-a-fullscreen-toggle-button-to-exoplayer-in-android/
@@ -304,6 +308,10 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
             // Set the ExoPlayer.EventListener to this activity.
             mExoPlayer.addListener(this);
 
+            if (videoPosition > 0) {
+                mExoPlayer.seekTo(videoPosition);
+            }
+
             // Prepare the MediaSource.
             String userAgent = Util.getUserAgent(this, "BakingApp");
             MediaSource mediaSource = new ExtractorMediaSource(mediaUri, new DefaultDataSourceFactory(
@@ -382,6 +390,14 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        if (mExoPlayer != null)
+            releasePlayer();
+    }
+
+
+    @Override
     protected void onResume() {
         super.onResume();
         initFullscreenMode();
@@ -394,5 +410,24 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
             if (mExoPlayerFullscreen) //on rotation change, if after rotated it is vertical
                 closeFullscreenMode(); //leave the full screen
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mExoPlayer != null)
+        outState.putLong("videoPosition", mExoPlayer.getCurrentPosition());
+        outState.putParcelableArrayList("food_ingredients", food_ingredients);
+        outState.putParcelable("food", food);
+        outState.putParcelableArrayList("food_step", food_step);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        videoPosition = savedInstanceState.getLong("videoPosition");
+        food_ingredients = savedInstanceState.getParcelableArrayList("food_ingredients");
+        food = savedInstanceState.getParcelable("food");
+        food_step = savedInstanceState.getParcelableArrayList("food_step");
     }
 }
