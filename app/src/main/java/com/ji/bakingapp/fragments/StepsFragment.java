@@ -321,11 +321,13 @@ public class StepsFragment extends Fragment implements ExoPlayer.EventListener {
         if (mPlayerView.getVisibility() == View.VISIBLE) {
             initFullscreenMode();
             initFullscreenButton();
-
             int Orientation = getResources().getConfiguration().orientation;
-            if (Orientation == Configuration.ORIENTATION_LANDSCAPE && !isATablet()) {
-                if (!mExoPlayerFullscreen)
+            if (Orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                if (!mExoPlayerFullscreen) {
                     openFullscreenMode(); //enter full screen if changes orientation to landscape
+                    mFullScreenIcon.setVisibility(View.VISIBLE);
+                    mFullScreenButton.setVisibility(View.VISIBLE);
+                }
             } else {
                 if (mExoPlayerFullscreen) //on rotation change, if after rotated it is vertical
                     closeFullscreenMode(); //leave the full screen

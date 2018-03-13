@@ -386,7 +386,8 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        releasePlayer();
+        if (mExoPlayer != null)
+            releasePlayer();
     }
 
     @Override
@@ -416,7 +417,7 @@ public class IntroductionActivity extends AppCompatActivity implements ExoPlayer
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if (mExoPlayer != null)
-        outState.putLong("videoPosition", mExoPlayer.getCurrentPosition());
+            outState.putLong("videoPosition", mExoPlayer.getCurrentPosition());
         outState.putParcelableArrayList("food_ingredients", food_ingredients);
         outState.putParcelable("food", food);
         outState.putParcelableArrayList("food_step", food_step);

@@ -49,6 +49,18 @@ public class StepDetailActivity extends AppCompatActivity implements View.OnClic
             ingredients = bundle.getParcelableArrayList("food_ingredients");
             food_name = food.getName();
 
+            StepsFragment stepFragment = new StepsFragment();
+            if (food_name.length() > 0)
+                this.setTitle(food_name);
+            stepFragment.setStepsList(food_step);
+            stepFragment.setStepIndex(index);
+
+
+            fragmentManager.beginTransaction()
+                    .add(R.id.steps_container, stepFragment)
+                    .addToBackStack("backStack")
+                    .commit();
+
         } else {
             food_step = savedInstanceState.getParcelableArrayList("food_step");
             food = savedInstanceState.getParcelable("food");
@@ -56,18 +68,6 @@ public class StepDetailActivity extends AppCompatActivity implements View.OnClic
             food_name = food.getName();
             index = savedInstanceState.getInt("index");
         }
-
-        StepsFragment stepFragment = new StepsFragment();
-        if (food_name.length() > 0)
-            this.setTitle(food_name);
-        stepFragment.setStepsList(food_step);
-        stepFragment.setStepIndex(index);
-
-
-        fragmentManager.beginTransaction()
-                .add(R.id.steps_container, stepFragment)
-                .addToBackStack("backStack")
-                .commit();
 
 
         checkForButtonVisibility();
